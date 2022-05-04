@@ -4,10 +4,8 @@ subtitle: "Simplification of a simple scRNA-seq dataset of 5 cancer cell lines f
 author: "Mariia Bilous, Aurelie Gabriel, Leonard Herault and David Gfeller"
 output:
   md_document:
-    variant: gfm
     toc: true # table of content true
-    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
-    number_sections: true  ## if you want number sections at each table header
+
 
 ---
 
@@ -155,7 +153,6 @@ MC <- SCimplify(
 )
 
 # Compute gene expression of metacells by simply averaging gene expression within each metacell
-
 MC.ge <- supercell_GE(
   ge = GetAssayData(sc),
   groups = MC$membership
@@ -173,6 +170,7 @@ if(0){
 }
 ```
 
-
+## Downstream analysis of metacells
+There are two options to perform the downstream analysis 
 
 
