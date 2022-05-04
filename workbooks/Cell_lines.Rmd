@@ -2,7 +2,9 @@
 title: "Cell Lines"
 subtitle: "Simplification of a simple scRNA-seq dataset of 5 cancer cell lines from (Tian et al., 2019)[https://doi.org/10.1038/s41592-019-0425-8]"
 author: "Mariia Bilous, Aurelie Gabriel, Leonard Herault and David Gfeller"
-output: html_notebook
+output:
+  md_document:
+    variant: markdown_github
 ---
 
 # Suggested course structute:
@@ -67,6 +69,7 @@ sc <- FindVariableFeatures(
 
 hvg <- VariableFeatures(sc)
 # plot variable features 
+plot1 <- VariableFeaturePlot(sc)
 LabelPoints(plot = plot1, points = hvg[1:20], repel = TRUE)
 ```
 
