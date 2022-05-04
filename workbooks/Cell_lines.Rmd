@@ -4,23 +4,30 @@ subtitle: "Simplification of a simple scRNA-seq dataset of 5 cancer cell lines f
 author: "Mariia Bilous, Aurelie Gabriel, Leonard Herault and David Gfeller"
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+
 ---
 
 # Suggested course structute:
-We firtstly run a **standard scRNA-seq data analysis pipeline** (i.e., data normalizatoion, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) usign [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly simiar sigle cells into metacells). For this we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We will also provide some hints on how *metacells* can be coumputed using alternative approaches including [MetaCell](https://github.com/tanaylab/metacell), [Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html), and [SEACell](https://github.com/dpeerlab/SEACells). We will then run **'a standard scRNA-seq data analysis pipeline'** adjusted to the metacell data and compare the results ontained at the single-cell and the metacell levels. 
+We first run a **standard scRNA-seq data analysis pipeline** (i.e., data normalization, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) using the [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly similar single cells into metacells). For this, we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We will also provide some hints on how *metacells* can be computed using alternative approaches including [MetaCell](https://github.com/tanaylab/metacell), [Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html), and [SEACell](https://github.com/dpeerlab/SEACells). We will then run **'a standard scRNA-seq data analysis pipeline'** adjusted to the metacell data and compare the results obtained at the single-cell and the metacell levels. 
 
-Then, they can use the code we provide to build metacells for their own datasets 
+Then, the participant can use the code we provide to build metacells and run some basic analysis for their datasets 
 
 ***
 **Some options:**
-* Alternatiely, we can run an adjusted (ie., sample-weighted) pipeline for metacells or/and a standard (ie, Seurat).
+
+* Alternatively, we can run an adjusted (ie., sample-weighted) pipeline for metacells or/and a standard (ie, Seurat).
+
 * Subsampling at the same graining level -> compare the results to those obtained at the single-cell level
 
 * We could provide an example of how metacell can be used for RNA-velocity (on another dataset)
+
 * How metacells can be used for data integration (if we have nice examples)
 
-* when and if analysing their own data, make sure to intoduce `cell.annotation` and `cell.split.condition` arguments of `SCimplify()` to avoid mixing of annotated cell types / conditions  within metacells. 
+* when and if analyzing their own data, make sure to introduce `cell.annotation` and `cell.split.condition` arguments of `SCimplify()` to avoid mixing of annotated cell types / conditions  within metacells. 
 
 ***
 
@@ -47,9 +54,10 @@ if(!identical(rownames(sc.meta), colnames(sc.counts))){
 
 # Single-cell level
 ## Standard downstream analysis  
-Run a brief analysis at the single-cell level, lets use the common [Seurat](https://satijalab.org/seurat/index.html) pipeline
-<span style="color: green;"> depending on the audience experience with Seurat, we can either separetely run these steps of the pre-processing or 'skip it' with 'one-line' command. For the memont, it is more step-by -step pre-processing, that can be replaced with : </span> 
-`sc <-  NormalizeData(sc) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
+Run a brief analysis at the single-cell level, lets's use the common [Seurat](https://satijalab.org/seurat/index.html) pipeline
+
+<span style="color: green;"> depending on the participants' experience with Seurat, we can either separately run these steps of the pre-processing or 'skip it' with 'one-line' command. For the moment, it is more step-by -step pre-processing, that can be replaced with : </span> 
+`sc <-  NormalizeData(sc, verbose=FALSE) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
 
 ```{r}
 set.seed(12345)
@@ -57,40 +65,43 @@ sc <- CreateSeuratObject(counts = sc.counts, project = proj.name, meta.data = sc
 sc
 ```
 
-## Data normalization
-```{r Normalize data and compute a set of highly variable genes}
-sc <- NormalizeData(sc)
+### Pre-processing
+#### Data normalization
+```{r Normalize data and compute a set of highly variable genes, warning=FALSE}
+sc <- NormalizeData(sc, verbose=FALSE)
 
 sc <- FindVariableFeatures(
   sc, 
   selection.method = "disp", # ""
-  nfeatures = 1000
+  nfeatures = 1000,
+  verbose=FALSE
   )
 
-hvg <- VariableFeatures(sc)
-# plot variable features 
+hvg <- VariableFeatures(sc, verbose=FALSE)
+
+# Plot variable features 
 plot1 <- VariableFeaturePlot(sc)
 LabelPoints(plot = plot1, points = hvg[1:20], repel = TRUE)
 ```
 
-## Scaling and dimensionality redution
-```{r}
-sc <- ScaleData(sc)
-sc <- RunPCA(sc)
+#### Scaling and dimensionality redution
+```{r message=FALSE, warning=FALSE}
+sc <- ScaleData(sc, verbose=FALSE)
+sc <- RunPCA(sc, verbose=FALSE)
 
 # Plot PCA (2D representation of scRNA-seq data) colored by cell line
 DimPlot(sc, reduction = "pca", group.by = "cell_line")
 ```
 
-## UMAP (non-linear dimensionaloty reduction)
-```{r}
+### UMAP (non-linear dimensionality reduction)
+```{r UMAP, message=FALSE, warning=FALSE}
 sc <- RunUMAP(sc,  dims = 1:10)
 
 # Plot UMAP (2D representation of scRNA-seq data) colored by cell line
 DimPlot(sc, reduction = "umap", group.by = "cell_line")
 ```
 
-## Clustering single-cell data
+### Clustering
 ```{r}
 
 sc <- FindNeighbors(sc, dims = 1:10)
@@ -101,18 +112,19 @@ table(sc@active.ident, sc$cell_line)
 DimPlot(sc, reduction = "umap", group.by = "ident")
 
 ```
-## Find markers of cell lines 
+
+### Differential expression analysis 
+#### Find Markers of cell lines
 ```{r}
 # Set idents to cell lines (as clusters are the same as cell lines)
 Idents(sc) <- "cell_line"
 
 # Compute upregulated genes in each cell line (versus other cells)
 sc.all.markers <-  FindAllMarkers(sc, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, test.use = "t")
-
 saveRDS(sc.all.markers, file = file.path(data.folder, "output", "sc_all_markers.Rds"))
 
 # Load markers (backup)
-# sc.all.markers <- readRDS(file = file.path(data.folder, "output", "sc_all_markers.Rds"))
+#sc.all.markers <- readRDS(file = file.path(data.folder, "output", "sc_all_markers.Rds"))
 
 # Top markers (select top markers of each cell line)
 sc.top.markers <- sc.all.markers %>%
@@ -121,14 +133,16 @@ sc.top.markers <- sc.all.markers %>%
 
 sc.top.markers
 ```
-## Plot the expression of found markers 
-```{r fig.height=2.5, fig.width=6}
+
+#### Plot the expression of some found markers 
+```{r fig.height=5, fig.width=7}
 VlnPlot(sc, features = sc.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))], ncol = 5, pt.size = 0.0)
 ```
 
-# Data simplification (coarse-graining)
 
-Here we compute metacells using our method called (SuperCell)[https://github.com/GfellerLab/SuperCell], but equally, metacells can be computed with (Metacell)[https://github.com/tanaylab/metacell], (Metacell2.0)[https://metacells.readthedocs.io/en/latest/readme.html] or (SEACell)[https://github.com/dpeerlab/SEACells] algorithms and we will see some examples below.
+# Data simplification (coarse-graining) -- Construction of *metacells*
+
+Here we compute metacells using our method called [SuperCell](https://github.com/GfellerLab/SuperCell), but equally, metacells can be computed with [Metacell](https://github.com/tanaylab/metacell), [Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html) or [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will see some examples below.
 ```{r Set parameters}
 gamma <- 20 # Graining level
 
@@ -151,13 +165,14 @@ MC.ge <- supercell_GE(
 if(0){
   MC.counts <- supercell_GE(
     ge = GetAssayData(sc, slot = "counts"),
+    mode = "sum", # summing counts instead of the default averaging
     groups = MC$membership
   )
   
-  MC.ge <- scater::normalizeCounts(MC.counts, size.factor = 1e4)
+  MC.ge <- Seurat::LogNormalize(MC.counts, verbose = FALSE)
 }
 ```
 
-Alternatively, metacells can be computed using (Metacell)[https://github.com/tanaylab/metacell], (Metacell2.0)[https://metacells.readthedocs.io/en/latest/readme.html] or (SEACell)[https://github.com/dpeerlab/SEACells] algorithms. 
+
 
 
