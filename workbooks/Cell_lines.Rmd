@@ -29,6 +29,12 @@ Then, the participant can use the code we provide to build metacells and run som
 
 ***
 
+# TO DO:
+
+* make `supercell_DimPlot()`
+* match colors for cell lines and clusters
+* 
+
 ```{r Load libraries, message=FALSE, warning=FALSE}
 # make a data library (cell lines or Zilionis)
 library(SuperCell)
@@ -65,12 +71,12 @@ sc
 
 ### Pre-processing
 #### Data normalization
-```{r Normalize data and compute a set of highly variable genes, warning=FALSE}
+```{r Normalize data and compute a set of highly variable genes, message=FALSE, warning=FALSE}
 sc <- NormalizeData(sc, verbose=FALSE)
 
 sc <- FindVariableFeatures(
   sc, 
-  selection.method = "disp", # ""
+  selection.method = "disp", # "vst" is default
   nfeatures = 1000,
   verbose=FALSE
   )
@@ -100,7 +106,7 @@ DimPlot(sc, reduction = "umap", group.by = "cell_line")
 ```
 
 ### Clustering
-```{r}
+```{r message=FALSE, warning=FALSE}
 
 sc <- FindNeighbors(sc, dims = 1:10)
 sc <- FindClusters(sc, resolution = 0.05)
@@ -113,7 +119,7 @@ DimPlot(sc, reduction = "umap", group.by = "ident")
 
 ### Differential expression analysis 
 #### Find Markers of cell lines
-```{r}
+```{r message=FALSE, warning=FALSE}
 # Set idents to cell lines (as clusters are the same as cell lines)
 Idents(sc) <- "cell_line"
 
@@ -133,7 +139,7 @@ sc.top.markers
 ```
 
 #### Plot the expression of some found markers 
-```{r fig.height=5, fig.width=7}
+```{r fig.height=5, fig.width=9}
 VlnPlot(sc, features = sc.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))], ncol = 5, pt.size = 0.0)
 ```
 
@@ -171,6 +177,94 @@ if(0){
 ```
 
 ## Downstream analysis of metacells
-There are two options to perform the downstream analysis 
+There are two options to perform the downstream analysis: 
+
+* **sample-weighted** when we account for a metacell size at each etep of the analysis 
+* **standard** when we treat metacells as single-cell and apply a standard pipeline
+
+## Sample-weighted downstream analysis of *metacells*
+
+For the sample-weighted analysis, we use a pipeline avalable with our [SuperCell]() package.
+
+### Pre-processing
+
+#### Transfer metadata (annotate metacell to a certain cell line)
+Since the cell line information is available in this dataset, we can annotate metacells to a certain cell line. Each metacell is annotated to the most abundant cell type in it.
+This also allows us to compute metacell *purity*, that is defined as a proportion of the most abundant cell type (use `method = "max_proportion"`) or as Shannon entropy (use `method = "entropy"`).
+
+```{r metacell annotation to cell line and their purity}
+
+MC$cell_line <- supercell_assign(
+  cluster = sc.meta$cell_line,          # single-cell assigment to cell lines 
+  supercell_membership = MC$membership  # single-cell assignment to metacells
+)
+
+method_purity <- c("max_proportion", "entropy")[1]
+MC.purity <- supercell_purity(
+  clusters = sc.meta$cell_line,
+  supercell_membership = MC$membership, 
+  method = method_purity
+)
+
+# Metacell purity distribution
+summary(MC.purity)
+#hist(MC.purity, main = paste0("Purity of metacells \nin terms of cell line composition (", method_purity,")"))
+```
+#### Visualize data using  metcall network 
+```{r metacell plot metacell network color cell line}
+supercell_plot(
+  MC$graph.supercells, 
+  group = MC$cell_line, 
+  seed = 1, 
+  alpha = -pi/2,
+  main  = "Metacells colored by cell line assignment"
+)
+```
+
+
+#### Dimensionality reduction (sample-weighted PCA)
+```{r metacell PCA}
+MC$PCA <- supercell_prcomp(
+  Matrix::t(MC.ge),
+  genes.use = MC$genes.use,  # or a new set of HVG can be computed
+  supercell_size = MC$supercell_size, # provide this parameter to run sample-weighted version of PCA,
+  k = 20
+)
+
+# (!) make supercell_DimPlot function instead of UMAP, tSNE etc
+MC$PCA_12 <- list("layout" = data.frame(X1 = MC$PCA$x[,1], X2 = MC$PCA$x[,2]))
+supercell_plot_UMAP(
+  MC, 
+  groups = MC$cell_line,
+  UMAP_name = "PCA_12", 
+  title = paste0("PCA of metacells colored by cell line assignment")
+)
+```
+
+#### Clustering (sample-weighted hclust)
+
+Sample-weighted clustering computed with the hierarchical clustering, that may accounts for sample weights
+```{r metacell clustering}
+## compute distance
+D              <- dist(MC$PCA$x)
+
+## cluster metacells
+MC$clustering    <- supercell_cluster(D = D, k = 5, supercell_size = MC$supercell_size)
+
+# Plot clustering result
+supercell_plot_UMAP(
+  MC, 
+  groups = factor(MC$clustering$clustering),
+  UMAP_name = "PCA_12", 
+  title = paste0("PCA of metacells colored by metacell clustering")
+)
+```
+
+
+## Standard downstream analysis
+For the standard downstream analysis, we can use the well-stablished [Seurat]() pipeline
+```{r}
+
+```
 
 

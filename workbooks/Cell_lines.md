@@ -1,4 +1,5 @@
 -   [Suggested course structute:](#suggested-course-structute)
+-   [TO DO:](#to-do)
 -   [Single-cell level](#single-cell-level)
     -   [Standard downstream analysis](#standard-downstream-analysis)
         -   [Pre-processing](#pre-processing)
@@ -11,6 +12,10 @@
     *metacells*](#data-simplification-coarse-graining-construction-of-metacells)
     -   [Downstream analysis of
         metacells](#downstream-analysis-of-metacells)
+    -   [Sample-weighted downstream analysis of
+        *metacells*](#sample-weighted-downstream-analysis-of-metacells)
+        -   [Pre-processing](#pre-processing-1)
+    -   [Standard downstream analysis](#standard-downstream-analysis-1)
 
 Suggested course structute:
 ===========================
@@ -56,6 +61,15 @@ run some basic analysis for their datasets
     within metacells.
 
 ------------------------------------------------------------------------
+
+TO DO:
+======
+
+-   make `supercell_DimPlot()`
+-   match colors for cell lines and clusters
+-   
+
+<!-- -->
 
     # make a data library (cell lines or Zilionis)
     library(SuperCell)
@@ -106,7 +120,7 @@ is more step-by -step pre-processing, that can be replaced with :
 
     sc <- FindVariableFeatures(
       sc, 
-      selection.method = "disp", # ""
+      selection.method = "disp", # "vst" is default
       nfeatures = 1000,
       verbose=FALSE
       )
@@ -116,8 +130,6 @@ is more step-by -step pre-processing, that can be replaced with :
     # Plot variable features 
     plot1 <- VariableFeaturePlot(sc)
     LabelPoints(plot = plot1, points = hvg[1:20], repel = TRUE)
-
-    ## When using repel, set xnudge and ynudge to 0 for optimal results
 
 ![](Cell_lines_files/figure-markdown_strict/Normalize%20data%20and%20compute%20a%20set%20of%20highly%20variable%20genes-1.png)
 
@@ -143,11 +155,6 @@ is more step-by -step pre-processing, that can be replaced with :
 ### Clustering
 
     sc <- FindNeighbors(sc, dims = 1:10)
-
-    ## Computing nearest neighbor graph
-
-    ## Computing SNN
-
     sc <- FindClusters(sc, resolution = 0.05)
 
     ## Modularity Optimizer version 1.3.0 by Ludo Waltman and Nees Jan van Eck
@@ -184,17 +191,6 @@ is more step-by -step pre-processing, that can be replaced with :
 
     # Compute upregulated genes in each cell line (versus other cells)
     sc.all.markers <-  FindAllMarkers(sc, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25, test.use = "t")
-
-    ## Calculating cluster HCC827
-
-    ## Calculating cluster H838
-
-    ## Calculating cluster H1975
-
-    ## Calculating cluster H2228
-
-    ## Calculating cluster A549
-
     saveRDS(sc.all.markers, file = file.path(data.folder, "output", "sc_all_markers.Rds"))
 
     # Load markers (backup)
@@ -269,4 +265,105 @@ see some examples below.
 Downstream analysis of metacells
 --------------------------------
 
-There are two options to perform the downstream analysis
+There are two options to perform the downstream analysis:
+
+-   **sample-weighted** when we account for a metacell size at each etep
+    of the analysis
+-   **standard** when we treat metacells as single-cell and apply a
+    standard pipeline
+
+Sample-weighted downstream analysis of *metacells*
+--------------------------------------------------
+
+For the sample-weighted analysis, we use a pipeline avalable with our
+[SuperCell]() package.
+
+### Pre-processing
+
+#### Transfer metadata (annotate metacell to a certain cell line)
+
+Since the cell line information is available in this dataset, we can
+annotate metacells to a certain cell line. Each metacell is annotated to
+the most abundant cell type in it. This also allows us to compute
+metacell *purity*, that is defined as a proportion of the most abundant
+cell type (use `method = "max_proportion"`) or as Shannon entropy (use
+`method = "entropy"`).
+
+    MC$cell_line <- supercell_assign(
+      cluster = sc.meta$cell_line,          # single-cell assigment to cell lines 
+      supercell_membership = MC$membership  # single-cell assignment to metacells
+    )
+
+    method_purity <- c("max_proportion", "entropy")[1]
+    MC.purity <- supercell_purity(
+      clusters = sc.meta$cell_line,
+      supercell_membership = MC$membership, 
+      method = method_purity
+    )
+
+    # Metacell purity distribution
+    summary(MC.purity)
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##       1       1       1       1       1       1
+
+    #hist(MC.purity, main = paste0("Purity of metacells \nin terms of cell line composition (", method_purity,")"))
+
+#### Visualize data using metcall network
+
+    supercell_plot(
+      MC$graph.supercells, 
+      group = MC$cell_line, 
+      seed = 1, 
+      alpha = -pi/2,
+      main  = "Metacells colored by cell line assignment"
+    )
+
+![](Cell_lines_files/figure-markdown_strict/metacell%20plot%20metacell%20network%20color%20cell%20line-1.png)
+
+#### Dimensionality reduction (sample-weighted PCA)
+
+    MC$PCA <- supercell_prcomp(
+      Matrix::t(MC.ge),
+      genes.use = MC$genes.use,  # or a new set of HVG can be computed
+      supercell_size = MC$supercell_size, # provide this parameter to run sample-weighted version of PCA,
+      k = 20
+    )
+
+    # (!) make supercell_DimPlot function instead of UMAP, tSNE etc
+    MC$PCA_12 <- list("layout" = data.frame(X1 = MC$PCA$x[,1], X2 = MC$PCA$x[,2]))
+    supercell_plot_UMAP(
+      MC, 
+      groups = MC$cell_line,
+      UMAP_name = "PCA_12", 
+      title = paste0("PCA of metacells colored by cell line assignment")
+    )
+
+![](Cell_lines_files/figure-markdown_strict/metacell%20PCA-1.png)
+
+#### Clustering (sample-weighted hclust)
+
+Sample-weighted clustering computed with the hierarchical clustering,
+that may accounts for sample weights
+
+    ## compute distance
+    D              <- dist(MC$PCA$x)
+
+    ## cluster metacells
+    MC$clustering    <- supercell_cluster(D = D, k = 5, supercell_size = MC$supercell_size)
+
+    # Plot clustering result
+    supercell_plot_UMAP(
+      MC, 
+      groups = factor(MC$clustering$clustering),
+      UMAP_name = "PCA_12", 
+      title = paste0("PCA of metacells colored by metacell clustering")
+    )
+
+![](Cell_lines_files/figure-markdown_strict/metacell%20clustering-1.png)
+
+Standard downstream analysis
+----------------------------
+
+For the standard downstream analysis, we can use the well-stablished
+[Seurat]() pipeline
