@@ -15,6 +15,8 @@
     -   [Sample-weighted downstream analysis of
         *metacells*](#sample-weighted-downstream-analysis-of-metacells)
         -   [Pre-processing](#pre-processing-1)
+        -   [Differential expression analysis in
+            metacells](#differential-expression-analysis-in-metacells)
     -   [Standard downstream analysis](#standard-downstream-analysis-1)
 
 Suggested course structute:
@@ -65,9 +67,16 @@ run some basic analysis for their datasets
 TO DO:
 ======
 
--   make `supercell_DimPlot()`
+-   <s>make `supercell_DimPlot()`</s> push `supercell_DimPlot()`
 -   match colors for cell lines and clusters
--   
+-   write ‘standard (not sample-weighted)’ analysis on metacells
+
+-   code for MC2 and SEAcells computation (to provide a link), save and
+    provide results of metcell membership computed with MC2 and SEACell
+
+-   dataset for demo of gene-gene correlation/RNA velocity/ Data
+    integratoin for more advanced steps of the analysis
+-   ATAC-seq example ?
 
 <!-- -->
 
@@ -330,12 +339,10 @@ cell type (use `method = "max_proportion"`) or as Shannon entropy (use
       k = 20
     )
 
-    # (!) make supercell_DimPlot function instead of UMAP, tSNE etc
-    MC$PCA_12 <- list("layout" = data.frame(X1 = MC$PCA$x[,1], X2 = MC$PCA$x[,2]))
-    supercell_plot_UMAP(
+    supercell_DimPlot(
       MC, 
       groups = MC$cell_line,
-      UMAP_name = "PCA_12", 
+      dim.name = "PCA", 
       title = paste0("PCA of metacells colored by cell line assignment")
     )
 
@@ -347,20 +354,73 @@ Sample-weighted clustering computed with the hierarchical clustering,
 that may accounts for sample weights
 
     ## compute distance
-    D              <- dist(MC$PCA$x)
+    D                <- dist(MC$PCA$x)
 
     ## cluster metacells
     MC$clustering    <- supercell_cluster(D = D, k = 5, supercell_size = MC$supercell_size)
 
     # Plot clustering result
-    supercell_plot_UMAP(
+    supercell_DimPlot(
       MC, 
       groups = factor(MC$clustering$clustering),
-      UMAP_name = "PCA_12", 
+      dim.name = "PCA", 
       title = paste0("PCA of metacells colored by metacell clustering")
     )
 
 ![](Cell_lines_files/figure-markdown_strict/metacell%20clustering-1.png)
+
+    table(MC$cell_line, MC$clustering$clustering)
+
+    ##         
+    ##           1  2  3  4  5
+    ##   A549   51  0  0  0  0
+    ##   H1975   0  0  0  0 27
+    ##   H2228   0  0 40  0  0
+    ##   H838    0  0  0 45  0
+    ##   HCC827  0 28  0  0  0
+
+### Differential expression analysis in metacells
+
+    # Compute upregulated genes in each cell line (versus other cells)
+    MC.all.markers <- supercell_FindAllMarkers(
+      ge = MC.ge, 
+      clusters = MC$cell_line, 
+      supercell_size = MC$supercell_size,
+      only.pos = TRUE, 
+      min.pct = 0.25, 
+      logfc.threshold = 0.25
+    )
+
+    saveRDS(MC.all.markers, file = file.path(data.folder, "output",  paste0("MC_gamma_", gamma, "_all_markers.Rds")))
+
+    # Load markers (backup)
+    #MC.all.markers <- readRDS(file = file.path(data.folder, "output", "paste0("MC_gamma_", gamma, "_all_markers.Rds")))
+
+    MC.all.markers.df <- data.frame()
+    for(cl in names(MC.all.markers)){
+      cur <- MC.all.markers[[cl]]
+      cur$cluster <- cl
+      cur$gene <- rownames(cur)
+      cur$avg_log2FC <- cur$logFC
+      MC.all.markers.df <- rbind(MC.all.markers.df, cur)
+    }
+
+
+    # Top markers (select top markers of each cell line)
+    MC.top.markers <- MC.all.markers.df %>%
+       group_by(cluster) %>%
+        slice_max(n = 2, order_by = avg_log2FC)
+
+#### Plot the expression of some found markers (in metacells)
+
+    supercell_VlnPlot(
+      ge = MC.ge, 
+      supercell_size =MC$supercell_size, 
+      clusters = MC$cell_line,
+      features = MC.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))],
+      ncol = 5)
+
+![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 Standard downstream analysis
 ----------------------------
