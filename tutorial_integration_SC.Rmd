@@ -319,15 +319,18 @@ We retrieved the gene coding for inflammatory cytokines highlited in the origina
 cytokines_Mega_ori_study <- c("PDGFA","TGFB1","TNFSF4","PF4V1","PF4","PPBP")
 cytokines_Mega_ori_study %in% rownames(markersMega)
 Idents(integrated) <- "majorType"
-VlnPlot(integrated, features = cytokines_Mega_ori_study,pt.size = 0)
+VlnPlot(integrated, features = cytokines_Mega_ori_study,pt.size = 0.1)
 ```
-We can compare with the expression of these cytokines in the S-S086-2 sample at the single cell and the metacell level
+We can compare with the expression of these cytokines in the S-S086-2 sample at the single cell and the metacell level.
 ```{r}
-Idents(pbmc) <- "majorType"
+
+Idents(SC.list[["S-S086-2"]]) <- "majorType"
+
 pbmc <- pbmc[,pbmc$majorType %in% levels(SC.list[["S-S086-2"]])] 
 pbmc$majorType <- factor(pbmc$majorType,levels =levels(SC.list[["S-S086-2"]]))
+Idents(pbmc) <- "majorType"
+
 VlnPlot(pbmc, features = cytokines_Mega_ori_study,pt.size = 0.1)
-Idents(SC.list[["S-S086-2"]]) <- "majorType"
 VlnPlot(SC.list[["S-S086-2"]], features = cytokines_Mega_ori_study,pt.size = 0.1)
 ```
 
