@@ -5,6 +5,9 @@
 .Rproj
 .DS_Store
 
-#.ipynb_checkpoints
+.ipynb_checkpoints
 
 *.h5ad
+*.Rdata
+*.Rds
+*.RData

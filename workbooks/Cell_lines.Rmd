@@ -11,7 +11,7 @@ output:
 ---
 
 # Suggested course structute:
-We first run a **standard scRNA-seq data analysis pipeline** (i.e., data normalization, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) using the [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly similar single cells into metacells). For this, we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We will also provide some hints on how *metacells* can be computed using alternative approaches including [MetaCell](https://github.com/tanaylab/metacell), [Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html), and [SEACell](https://github.com/dpeerlab/SEACells). We will then run **'a standard scRNA-seq data analysis pipeline'** adjusted to the metacell data and compare the results obtained at the single-cell and the metacell levels. 
+We first run a **standard scRNA-seq data analysis pipeline** (i.e., data normalization, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) using the [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly similar single cells into metacells). For this, we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We will also provide some hints on how *metacells* can be computed using alternative approaches including [MetaCell](https://github.com/tanaylab/metacell), [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html), and [SEACell](https://github.com/dpeerlab/SEACells). We will then run **'a standard scRNA-seq data analysis pipeline'** adjusted to the metacell data and compare the results obtained at the single-cell and the metacell levels. 
 
 Then, the participant can use the code we provide to build metacells and run some basic analysis for their datasets 
 
@@ -50,6 +50,7 @@ library(dplyr)
 
 ```{r Load data}
 proj.name    <- 'cell_lines'
+.color.cell.type <- c("A549" = "#E69F00", "H838" = "#56B4E9", "H1975" = "#009E73", "H2228" = "#F0E442", "HCC827" = "#CC79A7")
 data.folder  <- file.path("..", "data", proj.name)
 
 # load single-cell (sc) count matrix and cell metadata 
@@ -100,7 +101,7 @@ sc <- ScaleData(sc, verbose=FALSE)
 sc <- RunPCA(sc, verbose=FALSE)
 
 # Plot PCA (2D representation of scRNA-seq data) colored by cell line
-DimPlot(sc, reduction = "pca", group.by = "cell_line")
+DimPlot(sc, reduction = "pca", group.by = "cell_line", cols = .color.cell.type)
 ```
 
 ### UMAP (non-linear dimensionality reduction)
@@ -108,7 +109,7 @@ DimPlot(sc, reduction = "pca", group.by = "cell_line")
 sc <- RunUMAP(sc,  dims = 1:10)
 
 # Plot UMAP (2D representation of scRNA-seq data) colored by cell line
-DimPlot(sc, reduction = "umap", group.by = "cell_line")
+DimPlot(sc, reduction = "umap", group.by = "cell_line", cols = .color.cell.type)
 ```
 
 ### Clustering
@@ -146,7 +147,7 @@ sc.top.markers
 
 #### Plot the expression of some found markers 
 ```{r fig.height=5, fig.width=9}
-VlnPlot(sc, features = sc.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))], ncol = 5, pt.size = 0.0)
+VlnPlot(sc, features = sc.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))], ncol = 5, pt.size = 0.0, cols = .color.cell.type)
 ```
 
 
@@ -199,50 +200,78 @@ Since the cell line information is available in this dataset, we can annotate me
 This also allows us to compute metacell *purity*, that is defined as a proportion of the most abundant cell type (use `method = "max_proportion"`) or as Shannon entropy (use `method = "entropy"`).
 
 ```{r metacell annotation to cell line and their purity}
-
+# Annotate metacells to cells line
 MC$cell_line <- supercell_assign(
-  cluster = sc.meta$cell_line,          # single-cell assigment to cell lines 
-  supercell_membership = MC$membership  # single-cell assignment to metacells
+  cluster = sc.meta$cell_line,          # single-cell assignment to cell lines 
+  supercell_membership = MC$membership,  # single-cell assignment to metacells
+  method = "absolute" # available methods are c("jaccard", "relative", "absolute"), function's help() for explanation
 )
 
+# Compute purity of metacells as :
+#  * a proportion of the most abundant cell type withing metacells (`method = `"max_proportion)
+#  * an entropy of cell type within metacells (`method = "entropy"`)
 method_purity <- c("max_proportion", "entropy")[1]
-MC.purity <- supercell_purity(
+MC$purity <- supercell_purity(
   clusters = sc.meta$cell_line,
   supercell_membership = MC$membership, 
   method = method_purity
 )
 
 # Metacell purity distribution
-summary(MC.purity)
-#hist(MC.purity, main = paste0("Purity of metacells \nin terms of cell line composition (", method_purity,")"))
+summary(MC$purity)
+#hist(MC$purity, main = paste0("Purity of metacells \nin terms of cell line composition (", method_purity,")"))
 ```
 #### Visualize data using  metcall network 
 ```{r metacell plot metacell network color cell line}
 supercell_plot(
   MC$graph.supercells, 
   group = MC$cell_line, 
+  color.use = .color.cell.type,
   seed = 1, 
   alpha = -pi/2,
   main  = "Metacells colored by cell line assignment"
 )
 ```
+#### Create Seurat object to perform standard downstream analysis 
+```{r}
+MC.seurat <- supercell_2_Seurat(
+  SC.GE = MC.ge, 
+  SC = MC, 
+  fields = c("cell_line", "purity"),
+  var.genes = MC$genes.use,
+  N.comp = 10
+)
+
+Idents(MC.seurat) <- "cell_line"
+
+MC.seurat <- RunUMAP(MC.seurat, dims =1:10)
+DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
+```
 
 
-#### Dimensionality reduction (sample-weighted PCA)
+#### Dimensionality reduction (sample-weighted PCA +  UMAP)
 ```{r metacell PCA}
 MC$PCA <- supercell_prcomp(
   Matrix::t(MC.ge),
   genes.use = MC$genes.use,  # or a new set of HVG can be computed
   supercell_size = MC$supercell_size, # provide this parameter to run sample-weighted version of PCA,
-  k = 20
+  k = 10
+)
+
+MC$UMAP <- supercell_UMAP(
+  SC = MC,
+  PCA_name = "PCA",
+  n_neighbors = 30 # large number to repel cells 
 )
 
 supercell_DimPlot(
   MC, 
   groups = MC$cell_line,
-  dim.name = "PCA", 
-  title = paste0("PCA of metacells colored by cell line assignment")
+  dim.name = "UMAP", 
+  title = paste0("UMAP of metacells colored by cell line assignment"),
+  color.use = .color.cell.type
 )
+
 ```
 
 #### Clustering (sample-weighted hclust)
@@ -313,9 +342,45 @@ supercell_VlnPlot(
 
 
 ## Standard downstream analysis
-For the standard downstream analysis, we can use the well-stablished [Seurat]() pipeline
+For the standard downstream analysis, we can use the well-established [Seurat](https://satijalab.org/seurat/index.html) pipeline
 ```{r}
 
+```
+
+## Alternative constructions of metacells
+### Metacell construction with [Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html)
+
+Load pre-computed metacells with the Metacell-2 approach. See this [workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb) to reproduce the results or to run your own Metacell2 construction.
+```{r}
+library(anndata)
+## Load pre-computed metacell partition obtained with Metacell-2
+
+### comment this and provide R object dirrectly in case anndata will rise errors 
+metacell2_adata  <- read_h5ad(file.path(data.folder, "output", "seacells_gamma_20.h5ad")) # Metacell as anndata object
+metacell2_adata  <- read_h5ad(file.path(data.folder, "output", "mc2_gamma_20.h5ad")) # Metacell as anndata object
+metacell2_adata  <- read_h5ad(file.path(data.folder, "output", "metacell2_gamma_20.h5ad")) # Metacell as anndata object
+obs.sc           <- metacell2_adata #read.csv(file.path(data.folder, "output", "metacell2_20.csv")) # obs (cell meta data) of single-cell data used to build metacells with Metacell2
+
+metacell2 <- metacell_anndata_2_supercell(adata, obs.sc)
+
+# Annotate metacells to cell lines
+metacell2$SC_cell_line <- supercell_assign(
+  sc.meta$cell_line, 
+  supercell_membership = metacell2$membership
+)
+
+# Metacell count matrix (yet to be log-normalized)
+metacell2$SC.counts
+
+metacell2$SC.meta$supercell_size <- metacell2$supercell_size
+
+### END comment this and provide R object dirrectly in case anndata will rise errors 
+
+mc.MC.seurat <- CreateSeuratObject(
+  counts = metacell2$SC.counts, 
+  project = paste0(proj.name, "_metacell2"), 
+  meta.data = metacell2$SC.meta
+)
 ```
 
 
