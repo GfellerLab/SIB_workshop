@@ -336,29 +336,29 @@ metacell size).
 
     MC.seurat <- RunUMAP(MC.seurat, dims = 1:10)
 
-    ## 14:53:11 UMAP embedding parameters a = 0.9922 b = 1.112
+    ## 15:10:37 UMAP embedding parameters a = 0.9922 b = 1.112
 
-    ## 14:53:11 Read 191 rows and found 10 numeric columns
+    ## 15:10:37 Read 191 rows and found 10 numeric columns
 
-    ## 14:53:11 Using Annoy for neighbor search, n_neighbors = 30
+    ## 15:10:37 Using Annoy for neighbor search, n_neighbors = 30
 
-    ## 14:53:11 Building Annoy index with metric = cosine, n_trees = 50
+    ## 15:10:37 Building Annoy index with metric = cosine, n_trees = 50
 
     ## 0%   10   20   30   40   50   60   70   80   90   100%
 
     ## [----|----|----|----|----|----|----|----|----|----|
 
     ## **************************************************|
-    ## 14:53:11 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//Rtmpk7UlB7/file3564416ae224
-    ## 14:53:11 Searching Annoy index using 1 thread, search_k = 3000
-    ## 14:53:12 Annoy recall = 100%
-    ## 14:53:12 Commencing smooth kNN distance calibration using 1 thread
-    ## 14:53:12 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
-    ## 14:53:12 Initializing from PCA
-    ## 14:53:12 Using 'irlba' for PCA
-    ## 14:53:12 PCA: 2 components explained 49.92% variance
-    ## 14:53:12 Commencing optimization for 500 epochs, with 6042 positive edges
-    ## 14:53:13 Optimization finished
+    ## 15:10:37 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpE9IqMx/file368736625dfd
+    ## 15:10:37 Searching Annoy index using 1 thread, search_k = 3000
+    ## 15:10:37 Annoy recall = 100%
+    ## 15:10:38 Commencing smooth kNN distance calibration using 1 thread
+    ## 15:10:38 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
+    ## 15:10:38 Initializing from PCA
+    ## 15:10:38 Using 'irlba' for PCA
+    ## 15:10:38 PCA: 2 components explained 49.92% variance
+    ## 15:10:38 Commencing optimization for 500 epochs, with 6042 positive edges
+    ## 15:10:39 Optimization finished
 
     DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
 
@@ -684,12 +684,6 @@ to reproduce the results or to run your own SEACells construction.
     ## Warning in supercell_2_Seurat(SC.GE = seacell$SC.counts, is.log.normalized =
     ## FALSE, : Super-cell graph was not found in SC object, no super-cell graph was
     ## added to Seurat object
-
-    sessioninfo::session_info()%>%
-      details::details(
-        summary = 'Current session info',
-        open    = TRUE
-      )
 
 <details open>
 <summary>

@@ -479,7 +479,8 @@ if(I_HAVE_ANNDATA_PACKAGE){
 }
 ```
 
-```{r Sessioninfo}
+
+```{r Sessioninfo, echo=FALSE}
 sessioninfo::session_info()%>%
   details::details(
     summary = 'Current session info',
