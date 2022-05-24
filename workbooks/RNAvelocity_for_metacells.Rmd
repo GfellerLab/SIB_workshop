@@ -4,8 +4,9 @@ output:
   md_document:
     variant: markdown_github
 ---
-## RNA velocity combining with metacells computed with SuperCell
 
+RNA velocity for metacells
+==========================
 ```{r library}
 if (!requireNamespace("remotes")) install.packages("remotes")
 
@@ -17,7 +18,7 @@ library(velocyto.R)
 
 We show an example of how SuperCell can be used prior to velocyto.R to compute RNA velocity.
 
-### Load data and compute metacells' spliced and un-spliced counts
+## Load data and compute metacells' spliced and un-spliced counts
 
 
 We use a built-in *pancreas* dataset from [Bastidas-Ponce et al. (2019)](https://journals.biologists.com/dev/article/146/12/dev173849/19483/Comprehensive-single-cell-mRNA-profiling-reveals-a) For RNA velocity, we need spliced and un-spliced count matrices.
@@ -34,20 +35,20 @@ SC_pancreas <- SCimplify_for_velocity(
   gamma = 10)
 ```
 
-### Compute RNA velocity
+## Compute RNA velocity
 
 ```{r compute RNA velocity}
 Vel <- supercell_estimate_velocity(SC_pancreas$emat, SC_pancreas$nmat)
 ```
 
-### Plot RNA velocity on a tSNE's coordinates
+## Plot RNA velocity on a tSNE's coordinates
 
 ```{r Plot RNA velocity}
 # Assign clusters to metacells based on the given single clustering
 clusters <- supercell_assign(pancreas$meta$clusters, SC_pancreas$membership)
 ```
 
-#### Set up the color scheme
+### Set up the color scheme
 ```{r Set up the color scheme}
 # Set up the color scheme
 N.clusters <- length(unique(clusters))
@@ -58,7 +59,7 @@ color <- setNames(pal[as.character(clusters)], names(clusters))
 map_cluster_to_cluster_name <- c('Ngn3 low EP', 'Alpha', 'Delta', 'Beta', 'Pre-endocrine', 'Ngn3 high EP', 'Ductal', 'Epsilon')
 ```
 
-#### Plot tSNE
+### Plot tSNE
 ```{r Plot tSNE, fig.asp=1, fig.height=5, fig.width=5, fig.ext='pdf'}
 size <- sqrt(1+table(SC_pancreas$membership))/sqrt(2)/2
 set.seed(3)

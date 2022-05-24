@@ -1,3 +1,6 @@
+-   [Simplification of a simple scRNA-seq dataset of 5 cancer cell lines
+    from Tian et al.,
+    2019](#simplification-of-a-simple-scrna-seq-dataset-of-5-cancer-cell-lines-from-tian-et-al.-2019)
 -   [Workbook structure](#workbook-structure)
 -   [Single-cell level](#single-cell-level)
     -   [Standard downstream analysis](#standard-downstream-analysis)
@@ -36,6 +39,8 @@
         Metacell-2](#metacell-construction-with-metacell-2)
     -   [Metacell construction with
         SEACells](#metacell-construction-with-seacells)
+
+# Simplification of a simple scRNA-seq dataset of 5 cancer cell lines from [Tian et al., 2019](https://doi.org/10.1038/s41592-019-0425-8)
 
 # Workbook structure
 
@@ -339,29 +344,29 @@ metacell size).
 
     MC.seurat <- RunUMAP(MC.seurat, dims = 1:10)
 
-    ## 15:25:56 UMAP embedding parameters a = 0.9922 b = 1.112
+    ## 15:49:35 UMAP embedding parameters a = 0.9922 b = 1.112
 
-    ## 15:25:56 Read 191 rows and found 10 numeric columns
+    ## 15:49:35 Read 191 rows and found 10 numeric columns
 
-    ## 15:25:56 Using Annoy for neighbor search, n_neighbors = 30
+    ## 15:49:35 Using Annoy for neighbor search, n_neighbors = 30
 
-    ## 15:25:56 Building Annoy index with metric = cosine, n_trees = 50
+    ## 15:49:35 Building Annoy index with metric = cosine, n_trees = 50
 
     ## 0%   10   20   30   40   50   60   70   80   90   100%
 
     ## [----|----|----|----|----|----|----|----|----|----|
 
     ## **************************************************|
-    ## 15:25:56 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpvUWrCV/file37ba69f893c4
-    ## 15:25:56 Searching Annoy index using 1 thread, search_k = 3000
-    ## 15:25:56 Annoy recall = 100%
-    ## 15:25:57 Commencing smooth kNN distance calibration using 1 thread
-    ## 15:25:57 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
-    ## 15:25:57 Initializing from PCA
-    ## 15:25:57 Using 'irlba' for PCA
-    ## 15:25:57 PCA: 2 components explained 49.92% variance
-    ## 15:25:57 Commencing optimization for 500 epochs, with 6042 positive edges
-    ## 15:25:58 Optimization finished
+    ## 15:49:35 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmphHC8At/file397c441e8521
+    ## 15:49:35 Searching Annoy index using 1 thread, search_k = 3000
+    ## 15:49:35 Annoy recall = 100%
+    ## 15:49:35 Commencing smooth kNN distance calibration using 1 thread
+    ## 15:49:36 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
+    ## 15:49:36 Initializing from PCA
+    ## 15:49:36 Using 'irlba' for PCA
+    ## 15:49:36 PCA: 2 components explained 49.92% variance
+    ## 15:49:36 Commencing optimization for 500 epochs, with 6042 positive edges
+    ## 15:49:36 Optimization finished
 
     DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
 
