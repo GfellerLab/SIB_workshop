@@ -40,7 +40,7 @@ The simplification will be done with the algorithm developed in our group, calle
 
 Next, we demonstrate usage of metacells for the analysis of more realistic dataset of *COVID-19* patient blood sample following by the demonstration of how [metacells can be used for data integration](). For this, we apply metacell simplification to N COVID-19 samples and perform data integration of a total of NN cells at the metacell level. We hope you appreciate that the integration of such a large dataset is possible only at the metacell, but not at the single-cell level. 
 
-Finally, we provide a workbook of [metacell usage for the RNA velocity]() that you may investigate yourself. Please, keep in mind that it requires installation of [velocyto.R](http://velocyto.org).
+Finally, we provide a workbook of [metacell usage for the RNA velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelocity_for_metacells.md) that you may investigate yourself. Please, keep in mind that it requires installation of [velocyto.R](http://velocyto.org).
 
 ## Installation (Prerequisites)
 
@@ -59,6 +59,6 @@ Cloning this repository to run the workbooks:
 
 And downloading data and pre-processed objects of Metacell-2 and SEACell outputs into `/data` folder:
 ```{r eval=FALSE, include=TRUE}
->
+> 
 ```
 

@@ -77,8 +77,9 @@ you appreciate that the integration of such a large dataset is possible
 only at the metacell, but not at the single-cell level.
 
 Finally, we provide a workbook of [metacell usage for the RNA
-velocity]() that you may investigate yourself. Please, keep in mind that
-it requires installation of [velocyto.R](http://velocyto.org).
+velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelocity_for_metacells.md)
+that you may investigate yourself. Please, keep in mind that it requires
+installation of [velocyto.R](http://velocyto.org).
 
 ## Installation (Prerequisites)
 
@@ -101,5 +102,5 @@ And downloading data and pre-processed objects of Metacell-2 and SEACell
 outputs into `/data` folder:
 
 ``` r
->
+> 
 ```
