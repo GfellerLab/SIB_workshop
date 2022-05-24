@@ -1,4 +1,4 @@
--   [Workbook structute](#workbook-structute)
+-   [Workbook structure](#workbook-structure)
 -   [Single-cell level](#single-cell-level)
     -   [Standard downstream analysis](#standard-downstream-analysis)
         -   [Pre-processing](#pre-processing)
@@ -10,14 +10,15 @@
             analysis)](#differential-expression-analysis-to-remove-this-part-if-covid-dataset-contains-such-analysis)
 -   [Data simplification (coarse-graining) – Construction of
     *metacells*](#data-simplification-coarse-graining-construction-of-metacells)
-    -   [Downstream analysis of
-        metacells](#downstream-analysis-of-metacells)
+    -   [Analysis of *metacells*](#analysis-of-metacells)
         -   [Pre-processing](#pre-processing-1)
+    -   [Standard downstream analysis of
+        *metacells*](#standard-downstream-analysis-of-metacells)
         -   [Create Seurat object to perform standard downstream
             analysis](#create-seurat-object-to-perform-standard-downstream-analysis)
         -   [Clustering](#clustering-1)
         -   [DEA of cell lines in
-            metacells](#dea-of-cell-lines-in-metacells)
+            *metacells*](#dea-of-cell-lines-in-metacells)
         -   [Plot gene-gene correlation at single-cell and metacell
             levels (! TO find better
             examples)](#plot-gene-gene-correlation-at-single-cell-and-metacell-levels-to-find-better-examples)
@@ -27,7 +28,8 @@
         -   [Clustering (sample-weighted
             hclust)](#clustering-sample-weighted-hclust)
         -   [Differential expression analysis in metacells
-            (sample-weighted)](#differential-expression-analysis-in-metacells-sample-weighted)
+            (sample-weighted
+            t-test)](#differential-expression-analysis-in-metacells-sample-weighted-t-test)
 -   [Alternative constructions of
     metacells](#alternative-constructions-of-metacells)
     -   [Metacell construction with
@@ -35,7 +37,7 @@
     -   [Metacell construction with
         SEACells](#metacell-construction-with-seacells)
 
-# Workbook structute
+# Workbook structure
 
 We first run a **standard scRNA-seq data analysis pipeline** (i.e., data
 normalization, feature selection, dimensionality reduction,
@@ -54,7 +56,7 @@ We also provide some scripts to build *metacells* using alternative
 approaches including
 [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html)
 ([script to build metacells with
-Metacell2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb))
+Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb))
 and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build
 metacells with
 SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)).
@@ -220,7 +222,7 @@ Here we compute metacells using our method called
 [SuperCell](https://github.com/GfellerLab/SuperCell), but equally,
 metacells can be computed with
 [Metacell](https://github.com/tanaylab/metacell),
-[Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html) or
+[Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) or
 [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will
 see some examples below (see and ).
 
@@ -251,7 +253,7 @@ see some examples below (see and ).
       MC.ge <- Seurat::LogNormalize(MC.counts, verbose = FALSE)
     }
 
-## Downstream analysis of metacells
+## Analysis of *metacells*
 
 There are two options to perform the downstream analysis:
 
@@ -296,7 +298,7 @@ cell type (use `method = "max_proportion"`) or as Shannon entropy (use
 
     #hist(MC$purity, main = paste0("Purity of metacells \nin terms of cell line composition (", method_purity,")"))
 
-#### Visualize data using metcall network
+#### Visualize data using metacell network
 
     supercell_plot(
       MC$graph.supercells, 
@@ -308,7 +310,8 @@ cell type (use `method = "max_proportion"`) or as Shannon entropy (use
     )
 
 ![](Cell_lines_files/figure-markdown_strict/metacell%20plot%20metacell%20network%20color%20cell%20line-1.png)
-## Standard downstream analysis of metacells
+
+## Standard downstream analysis of *metacells*
 
 For the standard downstream analysis, we can use the well-established
 [Seurat](https://satijalab.org/seurat/index.html) pipeline
@@ -336,29 +339,29 @@ metacell size).
 
     MC.seurat <- RunUMAP(MC.seurat, dims = 1:10)
 
-    ## 15:10:37 UMAP embedding parameters a = 0.9922 b = 1.112
+    ## 15:25:56 UMAP embedding parameters a = 0.9922 b = 1.112
 
-    ## 15:10:37 Read 191 rows and found 10 numeric columns
+    ## 15:25:56 Read 191 rows and found 10 numeric columns
 
-    ## 15:10:37 Using Annoy for neighbor search, n_neighbors = 30
+    ## 15:25:56 Using Annoy for neighbor search, n_neighbors = 30
 
-    ## 15:10:37 Building Annoy index with metric = cosine, n_trees = 50
+    ## 15:25:56 Building Annoy index with metric = cosine, n_trees = 50
 
     ## 0%   10   20   30   40   50   60   70   80   90   100%
 
     ## [----|----|----|----|----|----|----|----|----|----|
 
     ## **************************************************|
-    ## 15:10:37 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpE9IqMx/file368736625dfd
-    ## 15:10:37 Searching Annoy index using 1 thread, search_k = 3000
-    ## 15:10:37 Annoy recall = 100%
-    ## 15:10:38 Commencing smooth kNN distance calibration using 1 thread
-    ## 15:10:38 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
-    ## 15:10:38 Initializing from PCA
-    ## 15:10:38 Using 'irlba' for PCA
-    ## 15:10:38 PCA: 2 components explained 49.92% variance
-    ## 15:10:38 Commencing optimization for 500 epochs, with 6042 positive edges
-    ## 15:10:39 Optimization finished
+    ## 15:25:56 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpvUWrCV/file37ba69f893c4
+    ## 15:25:56 Searching Annoy index using 1 thread, search_k = 3000
+    ## 15:25:56 Annoy recall = 100%
+    ## 15:25:57 Commencing smooth kNN distance calibration using 1 thread
+    ## 15:25:57 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
+    ## 15:25:57 Initializing from PCA
+    ## 15:25:57 Using 'irlba' for PCA
+    ## 15:25:57 PCA: 2 components explained 49.92% variance
+    ## 15:25:57 Commencing optimization for 500 epochs, with 6042 positive edges
+    ## 15:25:58 Optimization finished
 
     DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
 
@@ -384,7 +387,7 @@ Seurat clustering
 
 ![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
-### DEA of cell lines in metacells
+### DEA of cell lines in *metacells*
 
 #### Find Markers of cell lines
 
@@ -512,7 +515,7 @@ that may accounts for sample weights
     ##   H838    0  0  0 45  0
     ##   HCC827  0 28  0  0  0
 
-### Differential expression analysis in metacells (sample-weighted)
+### Differential expression analysis in metacells (sample-weighted t-test)
 
     # Compute upregulated genes in each cell line (versus other cells)
     MC.all.markers <- supercell_FindAllMarkers(
@@ -562,28 +565,28 @@ that may accounts for sample weights
 
 Metacell concept is not limited to the SuperCell algorithm and metacells
 can be computed using the
-[Metacells](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html)
+[Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html)
 and [SEACells](https://github.com/dpeerlab/SEACells) algorithms. Since
 both of the methods are implemented in Python, we provide scripts to
 buil metacells of the same cell line dataset either with
-[Metacells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)
-of with
+[Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)
+or with
 [SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb).
-In the following section you can find an example how to use the output
-of those alogorithm to obtain SuperCell-like output, which you can use
+In the following sections you can find 2 examples how to use the output
+of those algorithms to obtain SuperCell-like output, which you can use
 for the downstream analysis as was demonstrated above.
 
 Load pre-computed metacells with the Metacell-2 approach. See this
 [workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
-to reproduce the results or to run your own Metacell2 construction.
+to reproduce the results or to run your own Metacell-2 construction.
 
 **Note**, that to read python output, you will need the
-(anndata)\[<https://cran.r-project.org/web/packages/anndata/index.html>\]
+[anndata](https://cran.r-project.org/web/packages/anndata/index.html)
 library that may need some effort to install correctly. In case you
 faced any difficulties reading .h5ad anndata object (file
 `"seacells_gamma_20.h5ad"`), you can load the converted to the
-SuperCell-like Rdata object (file `"seacells_gamma_20.Rdata"`) or Seurat
-object (file `"seacells_gamma_20_seurat.Rdata"`)
+SuperCell-like .Rds object (file `"seacells_gamma_20.Rdata"`) or Seurat
+object (file `"seacells_gamma_20_seurat.Rds"`)
 
     I_HAVE_ANNDATA_PACKAGE <- TRUE
     fname <- "metacell2_gamma_20"
@@ -617,12 +620,12 @@ object (file `"seacells_gamma_20_seurat.Rdata"`)
       Idents(metacell2.seurat) <- "SC_cell_line"
       levels(metacell2.seurat) <- sort(levels(metacell2.seurat))
       
-      saveRDS(metacell2, file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-      saveRDS(metacell2.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+      saveRDS(metacell2, file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+      saveRDS(metacell2.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
       
     } else {
-      metacell2        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-      metacell2.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+      metacell2        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+      metacell2.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
     }
 
     ## [1] "Done: NormalizeData"
@@ -669,12 +672,12 @@ to reproduce the results or to run your own SEACells construction.
       Idents(seacell.seurat) <- "SC_cell_line"
       levels(seacell.seurat) <- sort(levels(seacell.seurat))
       
-      saveRDS(seacell, file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-      saveRDS(seacell.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+      saveRDS(seacell, file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+      saveRDS(seacell.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
       
     } else {
-      seacell        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-      seacell.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+      seacell        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+      seacell.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
     }
 
     ## [1] "Done: NormalizeData"

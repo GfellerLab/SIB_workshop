@@ -10,12 +10,12 @@ output:
 
 ---
 
-# Workbook structute
+# Workbook structure
 
 We first run a **standard scRNA-seq data analysis pipeline** (i.e., data normalization, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) using the [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly similar single cells into metacells). For this, we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We then perform the same **standard downstream analysis** of *metacells* and compare the results to those obtained at the single-cell level. Additionally, we provide code to run sample-weighted downstream analysis that accounts for the metacells size. 
 
 
-We also provide some scripts to build *metacells* using alternative approaches including  [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) ([script to build metacells with Metacell2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)) and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build metacells with SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)). To avoid any issues related to the installation of those packages or data transfrering from Python to R, we also privide precomputed results of metacell partition using those two methods (see \ref{Metacell2} and \ref{SEACells})
+We also provide some scripts to build *metacells* using alternative approaches including  [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) ([script to build metacells with Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)) and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build metacells with SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)). To avoid any issues related to the installation of those packages or data transfrering from Python to R, we also privide precomputed results of metacell partition using those two methods (see \ref{Metacell2} and \ref{SEACells})
 
 
 ```{r Load libraries, message=FALSE, warning=FALSE}
@@ -131,7 +131,7 @@ VlnPlot(sc, features = sc.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))], ncol
 
 # Data simplification (coarse-graining) -- Construction of *metacells*
 
-Here we compute metacells using our method called [SuperCell](https://github.com/GfellerLab/SuperCell), but equally, metacells can be computed with [Metacell](https://github.com/tanaylab/metacell), [Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html) or [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will see some examples below (see \ref{Metacell2} and \ref{SEACells}).
+Here we compute metacells using our method called [SuperCell](https://github.com/GfellerLab/SuperCell), but equally, metacells can be computed with [Metacell](https://github.com/tanaylab/metacell), [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) or [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will see some examples below (see \ref{Metacell2} and \ref{SEACells}).
 ```{r Set parameters}
 gamma <- 20 # Graining level
 
@@ -161,7 +161,7 @@ if(0){
 }
 ```
 
-## Downstream analysis of metacells
+## Analysis of *metacells*
 There are two options to perform the downstream analysis: 
 
 * **standard** when we treat metacells as single-cell and apply a standard pipeline
@@ -195,7 +195,8 @@ MC$purity <- supercell_purity(
 summary(MC$purity)
 #hist(MC$purity, main = paste0("Purity of metacells \nin terms of cell line composition (", method_purity,")"))
 ```
-#### Visualize data using  metcall network 
+
+#### Visualize data using  metacell network 
 ```{r metacell plot metacell network color cell line}
 supercell_plot(
   MC$graph.supercells, 
@@ -206,7 +207,8 @@ supercell_plot(
   main  = "Metacells colored by cell line assignment"
 )
 ```
-## Standard downstream analysis of metacells
+
+## Standard downstream analysis of *metacells*
 
 For the standard downstream analysis, we can use the well-established [Seurat](https://satijalab.org/seurat/index.html) pipeline
 
@@ -237,7 +239,7 @@ DimPlot(MC.seurat, reduction = "umap")
 
 ```
 
-### DEA of cell lines in metacells
+### DEA of cell lines in *metacells*
 #### Find Markers of cell lines
 ```{r message=FALSE, warning=FALSE}
 # Set idents to cell lines (as clusters are the same as cell lines)
@@ -338,7 +340,7 @@ supercell_DimPlot(
 table(MC$cell_line, MC$clustering$clustering)
 ```
 
-### Differential expression analysis in metacells (sample-weighted)
+### Differential expression analysis in metacells (sample-weighted t-test)
 ```{r DEA metacells}
 # Compute upregulated genes in each cell line (versus other cells)
 MC.all.markers <- supercell_FindAllMarkers(
@@ -390,11 +392,11 @@ supercell_VlnPlot(
 
 ## Metacell construction with [Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html)
 
-Metacell concept is not limited to the SuperCell algorithm and metacells can be computed using the [Metacells](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html) and [SEACells](https://github.com/dpeerlab/SEACells) algorithms. Since both of the methods are implemented in Python, we provide scripts to buil metacells of the same cell line dataset either with [Metacells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb) of with [SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb). In the following section you can find an example how to use the output of those alogorithm to obtain SuperCell-like output, which you can use for the downstream analysis as was demonstrated above. 
+Metacell concept is not limited to the SuperCell algorithm and metacells can be computed using the [Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html) and [SEACells](https://github.com/dpeerlab/SEACells) algorithms. Since both of the methods are implemented in Python, we provide scripts to buil metacells of the same cell line dataset either with [Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb) or with [SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb). In the following sections you can find 2 examples how to use the output of those algorithms to obtain SuperCell-like output, which you can use for the downstream analysis as was demonstrated above. 
 
-Load pre-computed metacells with the Metacell-2 approach. See this [workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb) to reproduce the results or to run your own Metacell2 construction.
+Load pre-computed metacells with the Metacell-2 approach. See this [workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb) to reproduce the results or to run your own Metacell-2 construction.
 
-**Note**, that to read python output, you will need the (anndata)[https://cran.r-project.org/web/packages/anndata/index.html] library that may need some effort to install correctly. In case you faced any difficulties reading .h5ad anndata object (file `"seacells_gamma_20.h5ad"`), you can load the converted to the SuperCell-like Rdata object (file `"seacells_gamma_20.Rdata"`) or Seurat object (file `"seacells_gamma_20_seurat.Rdata"`)
+**Note**, that to read python output, you will need the [anndata](https://cran.r-project.org/web/packages/anndata/index.html) library that may need some effort to install correctly. In case you faced any difficulties reading .h5ad anndata object (file `"seacells_gamma_20.h5ad"`), you can load the converted to the SuperCell-like .Rds object (file `"seacells_gamma_20.Rdata"`) or Seurat object (file `"seacells_gamma_20_seurat.Rds"`)
 ```{r Metacell2}
 I_HAVE_ANNDATA_PACKAGE <- TRUE
 fname <- "metacell2_gamma_20"
@@ -428,12 +430,12 @@ if(I_HAVE_ANNDATA_PACKAGE){
   Idents(metacell2.seurat) <- "SC_cell_line"
   levels(metacell2.seurat) <- sort(levels(metacell2.seurat))
   
-  saveRDS(metacell2, file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-  saveRDS(metacell2.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+  saveRDS(metacell2, file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+  saveRDS(metacell2.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
   
 } else {
-  metacell2        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-  metacell2.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+  metacell2        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+  metacell2.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
 }
 ```
 ## Metacell construction with [SEACells](https://github.com/dpeerlab/SEACells)
@@ -470,12 +472,12 @@ if(I_HAVE_ANNDATA_PACKAGE){
   Idents(seacell.seurat) <- "SC_cell_line"
   levels(seacell.seurat) <- sort(levels(seacell.seurat))
   
-  saveRDS(seacell, file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-  saveRDS(seacell.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+  saveRDS(seacell, file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+  saveRDS(seacell.seurat, file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
   
 } else {
-  seacell        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
-  seacell.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
+  seacell        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rds")))
+  seacell.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rds")))
 }
 ```
 
