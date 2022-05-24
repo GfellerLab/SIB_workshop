@@ -361,29 +361,29 @@ data and sample-weighted PCA (with the weigh being the metacell size).
 
     MC.seurat <- RunUMAP(MC.seurat, dims = 1:10)
 
-    ## 23:49:21 UMAP embedding parameters a = 0.9922 b = 1.112
+    ## 23:43:28 UMAP embedding parameters a = 0.9922 b = 1.112
 
-    ## 23:49:21 Read 191 rows and found 10 numeric columns
+    ## 23:43:28 Read 191 rows and found 10 numeric columns
 
-    ## 23:49:21 Using Annoy for neighbor search, n_neighbors = 30
+    ## 23:43:28 Using Annoy for neighbor search, n_neighbors = 30
 
-    ## 23:49:21 Building Annoy index with metric = cosine, n_trees = 50
+    ## 23:43:28 Building Annoy index with metric = cosine, n_trees = 50
 
     ## 0%   10   20   30   40   50   60   70   80   90   100%
 
     ## [----|----|----|----|----|----|----|----|----|----|
 
     ## **************************************************|
-    ## 23:49:21 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpnkcvyT/file34c827d6915
-    ## 23:49:21 Searching Annoy index using 1 thread, search_k = 3000
-    ## 23:49:21 Annoy recall = 100%
-    ## 23:49:21 Commencing smooth kNN distance calibration using 1 thread
-    ## 23:49:22 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
-    ## 23:49:22 Initializing from PCA
-    ## 23:49:22 Using 'irlba' for PCA
-    ## 23:49:22 PCA: 2 components explained 49.92% variance
-    ## 23:49:22 Commencing optimization for 500 epochs, with 6042 positive edges
-    ## 23:49:23 Optimization finished
+    ## 23:43:28 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//Rtmpev3TcF/file34292f5e8d8f
+    ## 23:43:28 Searching Annoy index using 1 thread, search_k = 3000
+    ## 23:43:28 Annoy recall = 100%
+    ## 23:43:29 Commencing smooth kNN distance calibration using 1 thread
+    ## 23:43:29 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
+    ## 23:43:29 Initializing from PCA
+    ## 23:43:29 Using 'irlba' for PCA
+    ## 23:43:29 PCA: 2 components explained 49.92% variance
+    ## 23:43:29 Commencing optimization for 500 epochs, with 6042 positive edges
+    ## 23:43:30 Optimization finished
 
     DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
 
