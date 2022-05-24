@@ -81,6 +81,23 @@ velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelo
 that you may investigate yourself. Please, keep in mind that it requires
 installation of [velocyto.R](http://velocyto.org).
 
+### Summary:
+
+There are 2 main and 1 supplementary workbooks:
+
+-   [workbook
+    1](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Cell_lines.md)
+-   [workbook 2]()
+-   [workbook
+    3](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelocity_for_metacells.md)
+
+And 2 notebooks to build metacells using alternative methods:
+
+-   [building metacells with
+    Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
+-   [building metacells with
+    SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)
+
 ## Installation (Prerequisites)
 
 We expect you to have RStudio and R \> 4.0.0 to be installed.
