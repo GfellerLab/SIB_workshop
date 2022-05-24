@@ -10,7 +10,8 @@ output:
 
 ---
 
-# Suggested course structute:
+# Workbook structute
+
 We first run a **standard scRNA-seq data analysis pipeline** (i.e., data normalization, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) using the [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly similar single cells into metacells). For this, we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We then perform the same **standard downstream analysis** of *metacells* and compare the results to those obtained at the single-cell level. Additionally, we provide code to run sample-weighted downstream analysis that accounts for the metacells size. 
 
 
@@ -476,6 +477,14 @@ if(I_HAVE_ANNDATA_PACKAGE){
   seacell        <- readRDS(file = file.path(data.folder, "output", paste0(fname, ".Rdata")))
   seacell.seurat <- readRDS(file = file.path(data.folder, "output", paste0(fname, "_seurat.Rdata")))
 }
+```
+
+```{r Sessioninfo}
+sessioninfo::session_info()%>%
+  details::details(
+    summary = 'Current session info',
+    open    = TRUE
+  )
 ```
 
 
