@@ -1,5 +1,4 @@
 -   [Suggested course structute:](#suggested-course-structute)
--   [TO DO:](#to-do)
 -   [Single-cell level](#single-cell-level)
     -   [Standard downstream analysis](#standard-downstream-analysis)
         -   [Pre-processing](#pre-processing)
@@ -14,13 +13,21 @@
     -   [Downstream analysis of
         metacells](#downstream-analysis-of-metacells)
         -   [Pre-processing](#pre-processing-1)
+        -   [Create Seurat object to perform standard downstream
+            analysis](#create-seurat-object-to-perform-standard-downstream-analysis)
+        -   [Clustering](#clustering-1)
+        -   [DEA of cell lines in
+            metacells](#dea-of-cell-lines-in-metacells)
+        -   [Plot gene-gene correlation at single-cell and metacell
+            levels (! TO find better
+            examples)](#plot-gene-gene-correlation-at-single-cell-and-metacell-levels-to-find-better-examples)
     -   [Alternative or Sample-weighted downstream analysis of
         *metacells*](#alternative-or-sample-weighted-downstream-analysis-of-metacells)
         -   [Dimensionality reduction](#dimensionality-reduction)
         -   [Clustering (sample-weighted
             hclust)](#clustering-sample-weighted-hclust)
-        -   [Differential expression analysis in
-            metacells](#differential-expression-analysis-in-metacells)
+        -   [Differential expression analysis in metacells
+            (sample-weighted)](#differential-expression-analysis-in-metacells-sample-weighted)
 -   [Alternative constructions of
     metacells](#alternative-constructions-of-metacells)
     -   [Metacell construction with
@@ -37,58 +44,23 @@ the [Seurat](https://satijalab.org/seurat/index.html) framework. Then,
 we **simplify** the same dataset by computing *metacells* (i.e.,
 grouping transcriptionally highly similar single cells into metacells).
 For this, we will use a method developed in our group called
-[SuperCell](https://github.com/GfellerLab/SuperCell). We will also
-provide some hints on how *metacells* can be computed using alternative
-approaches including [MetaCell](https://github.com/tanaylab/metacell),
-[Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html),
-and [SEACell](https://github.com/dpeerlab/SEACells). We will then run
-**‘a standard scRNA-seq data analysis pipeline’** adjusted to the
-metacell data and compare the results obtained at the single-cell and
-the metacell levels.
+[SuperCell](https://github.com/GfellerLab/SuperCell). We then perform
+the same **standard downstream analysis** of *metacells* and compare the
+results to those obtained at the single-cell level. Additionally, we
+provide code to run sample-weighted downstream analysis that accounts
+for the metacells size.
 
-Then, the participant can use the code we provide to build metacells and
-run some basic analysis for their datasets
-
-------------------------------------------------------------------------
-
-**Some options:**
-
--   Alternatively, we can run an adjusted (ie., sample-weighted)
-    pipeline for metacells or/and a standard (ie, Seurat).
-
--   Subsampling at the same graining level -> compare the results to
-    those obtained at the single-cell level
-
--   We could provide an example of how metacell can be used for
-    RNA-velocity (on another dataset)
-
--   How metacells can be used for data integration (if we have nice
-    examples)
-
--   when and if analyzing their own data, make sure to introduce
-    `cell.annotation` and `cell.split.condition` arguments of
-    `SCimplify()` to avoid mixing of annotated cell types / conditions
-    within metacells.
-
-------------------------------------------------------------------------
-
-# TO DO:
-
--   <s>make `supercell_DimPlot()`</s> push `supercell_DimPlot()`
-
--   match colors for cell lines and clusters
-
--   write ‘standard (not sample-weighted)’ analysis on metacells
-
--   code for MC2 and SEAcells computation (to provide a link), save and
-    provide results of metcell membership computed with MC2 and SEACell
-
--   dataset for demo of gene-gene correlation/RNA velocity/ Data
-    integratoin for more advanced steps of the analysis
-
--   ATAC-seq example ?
-
-<!-- -->
+We also provide some scripts to build *metacells* using alternative
+approaches including
+[Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html)
+([script to build metacells with
+Metacell2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb))
+and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build
+metacells with
+SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)).
+To avoid any issues related to the installation of those packages or
+data transfrering from Python to R, we also privide precomputed results
+of metacell partition using those two methods (see and )
 
     # make a data library (cell lines or Zilionis)
     library(SuperCell)
@@ -113,13 +85,12 @@ run some basic analysis for their datasets
 ## Standard downstream analysis
 
 Run a brief analysis at the single-cell level, lets’s use the common
-[Seurat](https://satijalab.org/seurat/index.html) pipeline
+[Seurat](https://satijalab.org/seurat/index.html) pipeline.
 
-<span style="color: green;"> depending on the participants’ experience
-with Seurat, we can either separately run these steps of the
-pre-processing or ‘skip it’ with ‘one-line’ command. For the moment, it
-is more step-by -step pre-processing, that can be replaced with :
-</span>
+Depending on the participants’ experience with Seurat, we can either
+separately run these steps of the pre-processing or ‘skip it’ with
+‘one-line’ command. For the moment, it is more step-by -step
+pre-processing, that can be replaced with :
 `sc <-  NormalizeData(sc, verbose=FALSE) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
 
     set.seed(12345)
@@ -251,7 +222,7 @@ metacells can be computed with
 [Metacell](https://github.com/tanaylab/metacell),
 [Metacell2.0](https://metacells.readthedocs.io/en/latest/readme.html) or
 [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will
-see some examples below.
+see some examples below (see and ).
 
     gamma <- 20 # Graining level
 
@@ -337,12 +308,16 @@ cell type (use `method = "max_proportion"`) or as Shannon entropy (use
     )
 
 ![](Cell_lines_files/figure-markdown_strict/metacell%20plot%20metacell%20network%20color%20cell%20line-1.png)
-## Standard downstream analysis of metacells For the standard downstream
-analysis, we can use the well-established
-[Seurat](https://satijalab.org/seurat/index.html) pipeline ### Create
-Seurat object to perform standard downstream analysis When creating
-Seurat Object, we perform sample-weighted scaling of gene expression
-data and sample-weighted PCA (with the weigh being the metacell size).
+## Standard downstream analysis of metacells
+
+For the standard downstream analysis, we can use the well-established
+[Seurat](https://satijalab.org/seurat/index.html) pipeline
+
+### Create Seurat object to perform standard downstream analysis
+
+When creating Seurat Object, we perform sample-weighted scaling of gene
+expression data and sample-weighted PCA (with the weigh being the
+metacell size).
 
     MC.seurat <- supercell_2_Seurat(
       SC.GE = MC.ge, 
@@ -361,34 +336,37 @@ data and sample-weighted PCA (with the weigh being the metacell size).
 
     MC.seurat <- RunUMAP(MC.seurat, dims = 1:10)
 
-    ## 23:43:28 UMAP embedding parameters a = 0.9922 b = 1.112
+    ## 14:33:57 UMAP embedding parameters a = 0.9922 b = 1.112
 
-    ## 23:43:28 Read 191 rows and found 10 numeric columns
+    ## 14:33:57 Read 191 rows and found 10 numeric columns
 
-    ## 23:43:28 Using Annoy for neighbor search, n_neighbors = 30
+    ## 14:33:57 Using Annoy for neighbor search, n_neighbors = 30
 
-    ## 23:43:28 Building Annoy index with metric = cosine, n_trees = 50
+    ## 14:33:57 Building Annoy index with metric = cosine, n_trees = 50
 
     ## 0%   10   20   30   40   50   60   70   80   90   100%
 
     ## [----|----|----|----|----|----|----|----|----|----|
 
     ## **************************************************|
-    ## 23:43:28 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//Rtmpev3TcF/file34292f5e8d8f
-    ## 23:43:28 Searching Annoy index using 1 thread, search_k = 3000
-    ## 23:43:28 Annoy recall = 100%
-    ## 23:43:29 Commencing smooth kNN distance calibration using 1 thread
-    ## 23:43:29 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
-    ## 23:43:29 Initializing from PCA
-    ## 23:43:29 Using 'irlba' for PCA
-    ## 23:43:29 PCA: 2 components explained 49.92% variance
-    ## 23:43:29 Commencing optimization for 500 epochs, with 6042 positive edges
-    ## 23:43:30 Optimization finished
+    ## 14:33:57 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpkExpER/file33314bccbd47
+    ## 14:33:57 Searching Annoy index using 1 thread, search_k = 3000
+    ## 14:33:57 Annoy recall = 100%
+    ## 14:33:58 Commencing smooth kNN distance calibration using 1 thread
+    ## 14:33:58 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
+    ## 14:33:58 Initializing from PCA
+    ## 14:33:58 Using 'irlba' for PCA
+    ## 14:33:58 PCA: 2 components explained 49.92% variance
+    ## 14:33:58 Commencing optimization for 500 epochs, with 6042 positive edges
+    ## 14:33:59 Optimization finished
 
     DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
 
-![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-6-1.png) ###
-Clustering Seurat clustering
+![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+
+### Clustering
+
+Seurat clustering
 
     MC.seurat <- FindClusters(MC.seurat, resolution = 0.5)
 
@@ -404,8 +382,11 @@ Clustering Seurat clustering
 
     DimPlot(MC.seurat, reduction = "umap")
 
-![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-7-1.png) ###
-DEA of cell lines in metacells #### Find Markers of cell lines
+![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+
+### DEA of cell lines in metacells
+
+#### Find Markers of cell lines
 
     # Set idents to cell lines (as clusters are the same as cell lines)
     Idents(MC.seurat) <- "cell_line"
@@ -451,9 +432,9 @@ DEA of cell lines in metacells #### Find Markers of cell lines
     genes.to.plot <- MC.seurat.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))]
     VlnPlot(MC.seurat, features = genes.to.plot, ncol = 5, pt.size = 0.0, cols = .color.cell.type)
 
-![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-9-1.png) ###
-Plot gene-gene correlation at single-cell and metacell levels (! TO find
-better examples)
+![](Cell_lines_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+
+### Plot gene-gene correlation at single-cell and metacell levels (! TO find better examples)
 
     gene_x <- MC$genes.use[500:505] #500
     gene_y <- MC$genes.use[550:555] #600
@@ -531,7 +512,7 @@ that may accounts for sample weights
     ##   H838    0  0  0 45  0
     ##   HCC827  0 28  0  0  0
 
-### Differential expression analysis in metacells
+### Differential expression analysis in metacells (sample-weighted)
 
     # Compute upregulated genes in each cell line (versus other cells)
     MC.all.markers <- supercell_FindAllMarkers(
