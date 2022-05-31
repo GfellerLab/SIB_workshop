@@ -2,11 +2,11 @@
 title: "Metacell integration"
 author: "Leonard Herault"
 date: '2022-05-12'
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
 ```
 
 ## library loading
@@ -81,7 +81,8 @@ We compute purity of metacells according to their assignment to the majorType an
 
 makeSeuratSC <- function(pbmc,
                          genes = NULL,
-                         metaFields = c("majorType","sampleID","Age","Sex","celltype","PatientID","SARS.CoV.2","Outcome","datasets","CoVID.19.severity","Sample.time")) {
+                         metaFields = c("majorType","sampleID","Age","Sex","celltype","PatientID","SARS.CoV.2","Outcome","datasets","CoVID.19.severity","Sample.time"),
+                         returnSC = F) {
   
   if(is.null(genes)) {
     genes <- VariableFeatures(pbmc)
@@ -109,10 +110,17 @@ GE <- supercell_GE(as.matrix(GetAssayData(pbmc,slot = "data")),groups = SC$membe
 
 seuratSC <- supercell_2_Seurat(SC.GE = GE,SC,fields = c(metaFields,"purity"))
 
-return(seuratSC)
+res <- seuratSC
+
+if (returnSC) {
+  res <- list(seuratSC = seuratSC,SC = SC)
 }
 
-seuratSC <- makeSeuratSC(pbmc)
+
+return(res)
+}
+
+supercells <- makeSeuratSC(pbmc,returnSC = T)
 ```
 
 
@@ -120,6 +128,7 @@ We use the Seurat workflow to analyse the sample at the metacell level.
 Data scaling and PCA computation are weighted according to metacell size with the `supercell_2_Seurat` function we just used. 
 
 ```{r}
+seuratSC <- supercells$seuratSC
 seuratSC <- RunUMAP(seuratSC,dims = c(1:20))
 ```
 
@@ -150,52 +159,89 @@ We can check the distribution of metacell purities and sizes obtained.
 ggplot(seuratSC@meta.data,aes(x=orig.ident,y=purity)) + geom_boxplot() + 
   ggplot(seuratSC@meta.data,aes(x=orig.ident,y=size)) + geom_boxplot() 
 ```
-
-We can see that metacell purity can highly depend on the PBMC type.
-To completely match the original study results one possible strategy is to make metacells per PBMC types.
-This will results in completely pure metacells according to the original annotation. 
-
 ```{r}
-ggplot(seuratSC@meta.data,aes(x=majorType,y=purity,fill = majorType)) + geom_boxplot()
+table(pbmc$majorType)
+table(seuratSC$majorType)
+Neu <- colnames(pbmc[,pbmc$majorType == "Neu"])
+Neu
+seuratSC$majorType[supercells$SC$membership[Neu]]
 ```
 
+We can see that for this PBMC sample the 4 single cell annotated as Neutrophils in the original study were merged with Monocytes at the metacell level.
+To completely match the original study results one possible strategy would be to make metacells per PBMC types or to use the `cell.split.condition` option of the `SCimplify` function.
+This will result in completely pure metacells according to the original annotation. 
+
+
 # gene correlation analysis
+
+The drop out noise is reduced with metacell analysis. 
+
+```{r}
+VlnPlot(pbmc, features = 'nFeature_RNA') 
+VlnPlot(seuratSC, feature = 'nFeature_RNA')
+```
+
+This results in a better observation of gene-gene expression correlation. To illustrate this we can look for correlations of expression of CXCL8, one cytokine that came out of the original study that migh be involved in severe COVID19, and transcription factors that potentially regulate it.
 
 ```{r}
 gene<-as.matrix(GetAssayData(seuratSC)["CXCL8",])
 correlations<-apply(as.matrix(GetAssayData(seuratSC)),1,function(x){cor(gene,x)})
 
-tf <- read.table("../../../Documents/testScenic/auxData/transcription.factor.activity.GO0003700.symbol.list")
+tf <- read.table("../data/transcription.factor.activity.GO0003700.symbol.list")
 
 correlations <- correlations[names(correlations) %in% tf$V1]
 head(sort(abs(correlations),decreasing = T),n = 10)
 ```
 
 
+
 ```{r}
+FeatureScatter(object = pbmc, feature1 = "CXCL8", feature2 = 'KLF10',group.by = "majorType")
+
+FeatureScatter(object = seuratSC, feature1 = "CXCL8", feature2 = 'KLF10',group.by = "majorType")
+
 FeatureScatter(object = pbmc, feature1 = "CXCL8", feature2 = 'FOS',group.by = "majorType")
 
 FeatureScatter(object = seuratSC, feature1 = "CXCL8", feature2 = 'FOS',group.by = "majorType")
 ```
-```{r}
-FeatureScatter(object = pbmc[,pbmc$majorType %in% c("NK","CD8")], feature1 = "JUN", feature2 = 'CCL4',group.by = "majorType")
+We can also use the `supercell_GeneGenePlot` to have a view of the size of the metacells.
+It outputs a weighted correlation according to supercell sizes.
 
-FeatureScatter(object = seuratSC[,seuratSC$majorType %in% c("NK","CD8")], feature1 = "JUN", feature2 = 'CCL4',group.by = "majorType",)
+```{r}
+supercell_GeneGenePlot(GetAssayData(seuratSC),
+                       gene_x = "CXCL8",gene_y = "FOS",
+                       supercell_size = seuratSC$size,
+                       clusters = seuratSC$majorType)
+
+supercell_GeneGenePlot(GetAssayData(seuratSC),
+                       gene_x = "CXCL8",gene_y = "KLF10",
+                       supercell_size = seuratSC$size,
+                       clusters = seuratSC$majorType)
 ```
+We can also better appreciate the anticorrelation between CCND2 cycline gene and CDKN1A, coding for a cell cycle inhibitor proteine.
+```{r}
+FeatureScatter(object = pbmc, feature1 = "CCND2", feature2 = 'CDKN1A',group.by = "majorType")
+
+supercell_GeneGenePlot(GetAssayData(seuratSC),
+                       gene_x = "CCND2",gene_y = "CDKN1A",
+                       supercell_size = seuratSC$size,
+                       clusters = seuratSC$majorType)
+```
+
 
 # Data integration at the metacell level
 
-We will now integrate at the metacell level a subset of 26 sample of fresh PBMCs from the original study gathering around 200 000 cells.
+We will now integrate at the metacell level a subset of 26 samples of fresh PBMCs from the original study gathering around 200 000 cells.
 We will use a gamma of 20 (10 000 metacells).
 16 GB of memory should be enough to conduct this analysis with both Seurat and Harmony integration methods whereas it would be impossible to analyze an R object of 200 000 cells with a laptop.
 
 ```{r}
-files <- list.files("pbmc_COVID19_sce",full.names = T)
+files <- list.files("../data/pbmc_COVID19_sce",full.names = T)
 
 
 SC.list <- list()
 SC.list[["S-S086-2"]] <- seuratSC
-for (f in files[-which(files == "pbmc_COVID19_sce/S-S086-2_sce.rds")]) {
+for (f in files[-which(files == "../data/pbmc_COVID19_sce/S-S086-2_sce.rds")]) {
   smp <- readRDS(f)
   smp <- sceRawToSeurat(smp)
   seuratSC <- makeSeuratSC(smp)
@@ -213,7 +259,7 @@ features <- features[!features %in% gene_blacklist]
 
 # Seurat integration workflow
 
-First we will use the Seurat [integration workflow for large datasets]((https://satijalab.org/seurat/articles/integration_large_datasets.html)) using a reference based integration and the RPCA reduction dimension method 
+First we will use the Seurat [integration workflow for large datasets]((https://satijalab.org/seurat/articles/integration_large_datasets.html)) using a reference based integration and the RPCA reduction dimension method.
 
 ```{r}
 
@@ -270,46 +316,36 @@ UMAPPlot(integrated,group.by = "Sex")
 
 Now we will use [Harmony](https://www.nature.com/articles/s41592-019-0619-0), an other integration method. We will use it inside the [Seurat framework](https://htmlpreview.github.io/?https://github.com/satijalab/seurat.wrappers/blob/master/docs/harmony.html)
 
-```{r}
+```{r message=FALSE}
 DefaultAssay(integrated) <- "RNA"
 integrated <- ScaleData(integrated,features = features)
 integrated <- RunPCA(integrated, npcs = 20, verbose = FALSE,features = features)
 
 integrated <- RunHarmony(integrated,c("sampleID","datasets"),theta = c(2.5,1.5))
 integrated <- RunUMAP(integrated,reduction = "harmony",
-                      reduction.name = "umap_harmony",
+                      reduction.name = "umap.harmony",
                       dims = 1:20)
 ```
 
 
 ```{r}
-DimPlot(integrated,group.by = "sampleID", reduction = "umap_harmony")
-DimPlot(integrated,group.by = "majorType", reduction = "umap_harmony")
-```
-
-As previously for the S-S086-2 sample, the splits in the CD8 and DC assigned metacells can be explained by the second level of clustering provided in the original study (`celltype` column in the metadata).
-
-```{r}
-DimPlot(integrated[,integrated$majorType == "DC"],group.by = "celltype", reduction = "umap_harmony") 
-DimPlot(integrated[,integrated$celltype == "T_CD8_c10-MKI67-GZMK"],group.by = "celltype", reduction = "umap_harmony",label = F) 
+DimPlot(integrated,group.by = "sampleID", reduction = "umap.harmony")
+DimPlot(integrated,group.by = "majorType", reduction = "umap.harmony")
 ```
 
 The original study mainly focused on the analysis of cell type variation according to COVID19 severity (control, mild/moderate, severe) and the time of sampling (control, progression, convalescence).
 
 ```{r}
-DimPlot(integrated,group.by = "Sample.time", reduction = "umap_harmony") 
-DimPlot(integrated,group.by = "CoVID.19.severity", reduction = "umap_harmony")
+DimPlot(integrated,group.by = "Sample.time", reduction = "umap.harmony") 
+DimPlot(integrated,group.by = "CoVID.19.severity", reduction = "umap.harmony")
 ```
 
-In this tutorial we will make a short analysis of this at the metacell level regarding the first level of annotation (PMBC major type). We can compute the observed versus expected cell number ratio for each PBMC type for the different condition.
+In this tutorial we will make a short analysis of this at the metacell level regarding the first level of annotation (PMBC major type). We can compute the observed versus expected cell number ratio for each PBMC type for the different conditions.
 We have to take into account the supercell size for this analysis.
 
 ```{r}
 majorTypeCounts <- aggregate(integrated$size, by=list(majorType = integrated$majorType,Severity = integrated$CoVID.19.severity,Time = integrated$Sample.time), FUN=sum)
 
-#majorTypeCounts <- transform(majorTypeCounts, x_pct = ave(x, Severity,Time, FUN = function(x) (x/sum(x))*100))
-
-#ggplot(majorTypeCounts,aes(x = Severity,y=x_pct,fill = majorType)) + geom_bar(stat = "identity") + facet_wrap("~Time")
 
 majorTypeCounts$group = paste(majorTypeCounts$Severity,majorTypeCounts$Time,sep = "_")
 
@@ -335,7 +371,7 @@ ggplot(data = melted_Roe, aes(majorType,group, , fill = value))+
  coord_fixed()
 ```
 
-We can do a differentially expressed gene analysis to characterized the gene markers of this population that seems to support progression of severe/critical COVID. We perform this analysis at the metacell level (on averaged normalized counts per metacell).
+We can do a differentially expressed gene analysis to characterized the gene markers of this population that seem to support progression of severe/critical COVID. We perform this analysis at the metacell level (on averaged normalized counts per metacell).
 
 ```{r}
 Idents(integrated) <- "majorType"
@@ -344,7 +380,7 @@ markersMega <- markersMega[markersMega$p_val_adj< 0.05,]
 markersMega[order(markersMega$avg_log2FC,decreasing = T),]
 ```
 
-We retrieved the gene coding for inflammatory cytokines highlighted in the original study.
+We retrieved the genes coding for inflammatory cytokines highlighted in the original study.
 
 ```{r}
 cytokines_Mega_ori_study <- c("PDGFA","TGFB1","TNFSF4","PF4V1","PF4","PPBP")
