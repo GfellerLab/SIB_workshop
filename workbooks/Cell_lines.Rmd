@@ -13,7 +13,12 @@ Simplification of a simple scRNA-seq dataset of 5 cancer cell lines from [Tian e
 
 We first run a **standard scRNA-seq data analysis pipeline** (i.e., data normalization, feature selection, dimensionality reduction, visualization, clustering and differential expression analysis) using the [Seurat](https://satijalab.org/seurat/index.html) framework. Then, we **simplify** the same dataset by computing *metacells* (i.e., grouping transcriptionally highly similar single cells into metacells). For this, we will use a method developed in our group called [SuperCell](https://github.com/GfellerLab/SuperCell). We then perform the same **standard downstream analysis** of *metacells* and compare the results to those obtained at the single-cell level. Additionally, we provide code to run sample-weighted downstream analysis that accounts for the metacells size.
 
-We also provide some scripts to build *metacells* using alternative approaches including [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) ([script to build metacells with Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)) and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build metacells with SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)). To avoid any issues related to the installation of those packages or data transfrering from Python to R, we also privide precomputed results of metacell partition using those two methods (see \ref{Metacell2} and \ref{SEACells})
+We also provide some scripts to build *metacells* using alternative approaches including [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) ([script to build metacells with Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)) and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build metacells with SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)). To avoid any issues related to the installation of those packages or data transferring from Python to R, we also provide precomputed results of metacell partition using those two methods (see \ref{Metacell2} and \ref{SEACells})
+
+```{r Install SuperCell, message=FALSE, warning=FALSE}
+#remotes::install_github("GfellerLab/SuperCell@dev")
+```
+
 
 ```{r Load libraries, message=FALSE, warning=FALSE}
 # make a data library (cell lines or Zilionis)
@@ -41,9 +46,7 @@ if(!identical(rownames(sc.meta), colnames(sc.counts))){
 
 ## Standard downstream analysis
 
-Run a brief analysis at the single-cell level, lets's use the common [Seurat](https://satijalab.org/seurat/index.html) pipeline.
-
-Depending on the participants' experience with Seurat, we can either separately run these steps of the pre-processing or 'skip it' with 'one-line' command. For the moment, it is more step-by -step pre-processing, that can be replaced with : `sc <-  NormalizeData(sc, verbose=FALSE) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
+Run a brief analysis at the single-cell level, let's use the common [Seurat](https://satijalab.org/seurat/index.html) pipeline.
 
 ```{r}
 set.seed(12345)
@@ -52,6 +55,7 @@ sc
 ```
 
 ### Pre-processing
+*Note*: It is more step-by-step pre-processing, that can be replaced with one-line command: `sc <-  NormalizeData(sc, verbose=FALSE) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
 
 #### Data normalization
 
@@ -136,7 +140,7 @@ VlnPlot(sc, features = sc.top.markers$gene[c(seq(1, 9, 2), seq(2, 10, 2))], ncol
 
 # Data simplification (coarse-graining) -- Construction of *metacells*
 
-Here we compute metacells using our method called [SuperCell](https://github.com/GfellerLab/SuperCell), but equally, metacells can be computed with [Metacell](https://github.com/tanaylab/metacell), [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) or [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will see some examples below (see \ref{Metacell2} and \ref{SEACells}).
+Here we compute metacells using our method called [SuperCell](https://github.com/GfellerLab/SuperCell), but equally, metacells can be computed with [Metacell](https://github.com/tanaylab/metacell), [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) or [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will see some examples below.
 
 ```{r Set parameters}
 gamma <- 20 # Graining level
@@ -168,11 +172,6 @@ if(0){
 ```
 
 ## Analysis of *metacells*
-
-There are two options to perform the downstream analysis:
-
--   **standard** when we treat metacells as single-cell and apply a standard pipeline
--   **sample-weighted** when we account for a metacell size at each step of the analysis
 
 ### Pre-processing
 
@@ -216,13 +215,19 @@ supercell_plot(
 )
 ```
 
+There are two options to perform the downstream analysis:
+
+-   **standard** when we treat metacells as single-cell data and apply a standard pipeline
+-   **sample-weighted** when we account for a metacell size at each step of the analysis
+
+
 ## Standard downstream analysis of *metacells*
 
 For the standard downstream analysis, we can use the well-established [Seurat](https://satijalab.org/seurat/index.html) pipeline
 
 ### Create Seurat object to perform standard downstream analysis
 
-When creating Seurat Object, we perform sample-weighted scaling of gene expression data and sample-weighted PCA (with the weigh being the metacell size).
+*Note*: When creating Seurat Object, we perform sample-weighted scaling of gene expression data and sample-weighted PCA (with the weigh being the metacell size).
 
 ```{r}
 MC.seurat <- supercell_2_Seurat(
@@ -305,7 +310,7 @@ p.MC$p
 
 ## Alternative or Sample-weighted downstream analysis of *metacells*
 
-For the sample-weighted analysis, we use a pipeline avalable with our [SuperCell](https://github.com/GfellerLab/SuperCell) package.
+For the sample-weighted analysis, we use a pipeline available with our [SuperCell](https://github.com/GfellerLab/SuperCell) package.
 
 ### Dimensionality reduction
 
