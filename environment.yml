@@ -1,0 +1,51 @@
+name: metacell_tutorial
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - pip
+  - git
+
+  - cmake
+  - r-igraph
+  - r-irlba
+  - r-remotes
+  - r-plyr
+  - r-patchwork
+  - r-matrix
+  - r-hmisc
+  - r-weights
+  - r-corpcor
+  - r-weightedcluster
+  - r-rann
+  - r-anndata
+  - r-umap
+  - r-seurat
+  - r-sessioninfo
+  - r-details
+
+  - numpy
+  - scipy
+  - cython
+  - numba
+  - matplotlib
+  - scikit-learn
+  - h5py
+  - click
+
+  - ipython
+  - scanpy=1.8.2
+  - loompy=3.0.6
+  - python-igraph
+  - louvain>=0.6,!=0.6.2
+  - fa2
+  - leidenalg
+  - seaborn
+
+  - pip:
+    - dfply
+    - git+https://github.com/settylab/Palantir@removeTSNE
+    - git+https://github.com/dpeerlab/SEACells
+    - velocyto
+    - metacells

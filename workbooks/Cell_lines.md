@@ -66,8 +66,10 @@ and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build
 metacells with
 SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)).
 To avoid any issues related to the installation of those packages or
-data transfrering from Python to R, we also privide precomputed results
+data transferring from Python to R, we also provide precomputed results
 of metacell partition using those two methods (see and )
+
+    #remotes::install_github("GfellerLab/SuperCell@dev")
 
     # make a data library (cell lines or Zilionis)
     library(SuperCell)
@@ -91,14 +93,8 @@ of metacell partition using those two methods (see and )
 
 ## Standard downstream analysis
 
-Run a brief analysis at the single-cell level, lets’s use the common
+Run a brief analysis at the single-cell level, let’s use the common
 [Seurat](https://satijalab.org/seurat/index.html) pipeline.
-
-Depending on the participants’ experience with Seurat, we can either
-separately run these steps of the pre-processing or ‘skip it’ with
-‘one-line’ command. For the moment, it is more step-by -step
-pre-processing, that can be replaced with :
-`sc <-  NormalizeData(sc, verbose=FALSE) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
 
     set.seed(12345)
     sc <- CreateSeuratObject(counts = sc.counts, project = proj.name, meta.data = sc.meta)
@@ -109,6 +105,10 @@ pre-processing, that can be replaced with :
     ## Active assay: RNA (11786 features, 0 variable features)
 
 ### Pre-processing
+
+*Note*: It is more step-by-step pre-processing, that can be replaced
+with one-line command:
+`sc <-  NormalizeData(sc, verbose=FALSE) %>% FindVariableFeatures(selection.method = "disp", nfeatures = 1000, verbose=FALSE) %>% ScaleData(verbose=FALSE) %>% RunPCA(verbose=FALSE)`
 
 #### Data normalization
 
@@ -229,7 +229,7 @@ metacells can be computed with
 [Metacell](https://github.com/tanaylab/metacell),
 [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html) or
 [SEACell](https://github.com/dpeerlab/SEACells) algorithms and we will
-see some examples below (see and ).
+see some examples below.
 
     gamma <- 20 # Graining level
 
@@ -259,13 +259,6 @@ see some examples below (see and ).
     }
 
 ## Analysis of *metacells*
-
-There are two options to perform the downstream analysis:
-
--   **standard** when we treat metacells as single-cell and apply a
-    standard pipeline
--   **sample-weighted** when we account for a metacell size at each step
-    of the analysis
 
 ### Pre-processing
 
@@ -316,6 +309,13 @@ cell type (use `method = "max_proportion"`) or as Shannon entropy (use
 
 ![](Cell_lines_files/figure-markdown_strict/metacell%20plot%20metacell%20network%20color%20cell%20line-1.png)
 
+There are two options to perform the downstream analysis:
+
+-   **standard** when we treat metacells as single-cell data and apply a
+    standard pipeline
+-   **sample-weighted** when we account for a metacell size at each step
+    of the analysis
+
 ## Standard downstream analysis of *metacells*
 
 For the standard downstream analysis, we can use the well-established
@@ -323,9 +323,9 @@ For the standard downstream analysis, we can use the well-established
 
 ### Create Seurat object to perform standard downstream analysis
 
-When creating Seurat Object, we perform sample-weighted scaling of gene
-expression data and sample-weighted PCA (with the weigh being the
-metacell size).
+*Note*: When creating Seurat Object, we perform sample-weighted scaling
+of gene expression data and sample-weighted PCA (with the weigh being
+the metacell size).
 
     MC.seurat <- supercell_2_Seurat(
       SC.GE = MC.ge, 
@@ -344,29 +344,29 @@ metacell size).
 
     MC.seurat <- RunUMAP(MC.seurat, dims = 1:10)
 
-    ## 15:49:35 UMAP embedding parameters a = 0.9922 b = 1.112
+    ## 13:26:54 UMAP embedding parameters a = 0.9922 b = 1.112
 
-    ## 15:49:35 Read 191 rows and found 10 numeric columns
+    ## 13:26:54 Read 191 rows and found 10 numeric columns
 
-    ## 15:49:35 Using Annoy for neighbor search, n_neighbors = 30
+    ## 13:26:54 Using Annoy for neighbor search, n_neighbors = 30
 
-    ## 15:49:35 Building Annoy index with metric = cosine, n_trees = 50
+    ## 13:26:54 Building Annoy index with metric = cosine, n_trees = 50
 
     ## 0%   10   20   30   40   50   60   70   80   90   100%
 
     ## [----|----|----|----|----|----|----|----|----|----|
 
     ## **************************************************|
-    ## 15:49:35 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmphHC8At/file397c441e8521
-    ## 15:49:35 Searching Annoy index using 1 thread, search_k = 3000
-    ## 15:49:35 Annoy recall = 100%
-    ## 15:49:35 Commencing smooth kNN distance calibration using 1 thread
-    ## 15:49:36 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
-    ## 15:49:36 Initializing from PCA
-    ## 15:49:36 Using 'irlba' for PCA
-    ## 15:49:36 PCA: 2 components explained 49.92% variance
-    ## 15:49:36 Commencing optimization for 500 epochs, with 6042 positive edges
-    ## 15:49:36 Optimization finished
+    ## 13:26:54 Writing NN index file to temp file /var/folders/g3/m1nhnz5910s9mckg3ymbz_b80000gn/T//RtmpV0kvhS/file1136c7a7c1fe9
+    ## 13:26:54 Searching Annoy index using 1 thread, search_k = 3000
+    ## 13:26:54 Annoy recall = 100%
+    ## 13:26:55 Commencing smooth kNN distance calibration using 1 thread
+    ## 13:26:55 Found 2 connected components, falling back to 'spca' initialization with init_sdev = 1
+    ## 13:26:55 Initializing from PCA
+    ## 13:26:55 Using 'irlba' for PCA
+    ## 13:26:55 PCA: 2 components explained 49.92% variance
+    ## 13:26:55 Commencing optimization for 500 epochs, with 6042 positive edges
+    ## 13:26:56 Optimization finished
 
     DimPlot(MC.seurat, cols = .color.cell.type, reduction = "umap")
 
@@ -461,7 +461,7 @@ Seurat clustering
 
 ## Alternative or Sample-weighted downstream analysis of *metacells*
 
-For the sample-weighted analysis, we use a pipeline avalable with our
+For the sample-weighted analysis, we use a pipeline available with our
 [SuperCell](https://github.com/GfellerLab/SuperCell) package.
 
 ### Dimensionality reduction
@@ -700,168 +700,188 @@ to reproduce the results or to run your own SEACells construction.
 
 
     ─ Session info ───────────────────────────────────────────────────────────────
-     setting  value                       
-     version  R version 4.0.4 (2021-02-15)
-     os       macOS Mojave 10.14.6        
-     system   x86_64, darwin17.0          
-     ui       X11                         
-     language (EN)                        
-     collate  en_US.UTF-8                 
-     ctype    en_US.UTF-8                 
-     tz       Europe/Zurich               
-     date     2022-05-24                  
+     setting  value
+     version  R version 4.1.3 (2022-03-10)
+     os       macOS Mojave 10.14.6
+     system   x86_64, darwin13.4.0
+     ui       unknown
+     language (EN)
+     collate  en_US.UTF-8
+     ctype    en_US.UTF-8
+     tz       Europe/Zurich
+     date     2022-05-31
+     pandoc   2.14.0.3 @ /Applications/RStudio.app/Contents/MacOS/pandoc/ (via rmarkdown)
 
     ─ Packages ───────────────────────────────────────────────────────────────────
-     package         * version  date       lib source        
-     abind             1.4-5    2016-07-21 [1] CRAN (R 4.0.2)
-     anndata         * 0.7.5.3  2021-09-10 [1] CRAN (R 4.0.2)
-     askpass           1.1      2019-01-13 [1] CRAN (R 4.0.2)
-     assertthat        0.2.1    2019-03-21 [1] CRAN (R 4.0.2)
-     backports         1.4.1    2021-12-13 [1] CRAN (R 4.0.2)
-     base64enc         0.1-3    2015-07-28 [1] CRAN (R 4.0.2)
-     boot              1.3-27   2021-02-12 [1] CRAN (R 4.0.2)
-     broom             0.8.0    2022-04-13 [1] CRAN (R 4.0.4)
-     checkmate         2.1.0    2022-04-21 [1] CRAN (R 4.0.4)
-     cli               3.3.0    2022-04-25 [1] CRAN (R 4.0.4)
-     clipr             0.7.1    2020-10-08 [1] CRAN (R 4.0.2)
-     cluster           2.1.1    2021-02-14 [1] CRAN (R 4.0.2)
-     codetools         0.2-18   2020-11-04 [1] CRAN (R 4.0.2)
-     colorspace        2.0-3    2022-02-21 [1] CRAN (R 4.0.5)
-     corpcor           1.6.10   2021-09-16 [1] CRAN (R 4.0.2)
-     cowplot           1.1.1    2020-12-30 [1] CRAN (R 4.0.2)
-     crayon            1.5.1    2022-03-26 [1] CRAN (R 4.0.5)
-     data.table        1.14.2   2021-09-27 [1] CRAN (R 4.0.2)
-     DBI               1.1.1    2021-01-15 [1] CRAN (R 4.0.2)
-     deldir            1.0-6    2021-10-23 [1] CRAN (R 4.0.2)
-     desc              1.4.1    2022-03-06 [1] CRAN (R 4.0.5)
-     details           0.3.0    2022-03-27 [1] CRAN (R 4.0.5)
-     digest            0.6.29   2021-12-01 [1] CRAN (R 4.0.2)
-     dplyr           * 1.0.9    2022-04-28 [1] CRAN (R 4.0.4)
-     ellipsis          0.3.2    2021-04-29 [1] CRAN (R 4.0.2)
-     evaluate          0.15     2022-02-18 [1] CRAN (R 4.0.5)
-     fansi             1.0.3    2022-03-24 [1] CRAN (R 4.0.5)
-     farver            2.1.0    2021-02-28 [1] CRAN (R 4.0.2)
-     fastmap           1.1.0    2021-01-25 [1] CRAN (R 4.0.2)
-     fitdistrplus      1.1-8    2022-03-10 [1] CRAN (R 4.0.5)
-     foreign           0.8-81   2020-12-22 [1] CRAN (R 4.0.2)
-     Formula           1.2-4    2020-10-16 [1] CRAN (R 4.0.2)
-     future            1.25.0   2022-04-24 [1] CRAN (R 4.0.4)
-     future.apply      1.9.0    2022-04-25 [1] CRAN (R 4.0.4)
-     gdata             2.18.0.1 2022-05-10 [1] CRAN (R 4.0.4)
-     generics          0.1.2    2022-01-31 [1] CRAN (R 4.0.5)
-     ggplot2           3.3.6    2022-05-03 [1] CRAN (R 4.0.4)
-     ggrepel           0.9.1    2021-01-15 [1] CRAN (R 4.0.2)
-     ggridges          0.5.3    2021-01-08 [1] CRAN (R 4.0.2)
-     globals           0.15.0   2022-05-09 [1] CRAN (R 4.0.4)
-     glue              1.6.2    2022-02-24 [1] CRAN (R 4.0.5)
-     goftest           1.2-3    2021-10-07 [1] CRAN (R 4.0.2)
-     gridExtra         2.3      2017-09-09 [1] CRAN (R 4.0.2)
-     gtable            0.3.0    2019-03-25 [1] CRAN (R 4.0.2)
-     gtools            3.9.2    2021-06-06 [1] CRAN (R 4.0.2)
-     here              1.0.1    2020-12-13 [1] CRAN (R 4.0.2)
-     highr             0.9      2021-04-16 [1] CRAN (R 4.0.2)
-     Hmisc             4.7-0    2022-04-19 [1] CRAN (R 4.0.4)
-     htmlTable         2.4.0    2022-01-04 [1] CRAN (R 4.0.5)
-     htmltools         0.5.2    2021-08-25 [1] CRAN (R 4.0.2)
-     htmlwidgets       1.5.4    2021-09-08 [1] CRAN (R 4.0.2)
-     httpuv            1.6.5    2022-01-05 [1] CRAN (R 4.0.5)
-     httr              1.4.3    2022-05-04 [1] CRAN (R 4.0.4)
-     ica               1.0-2    2018-05-24 [1] CRAN (R 4.0.2)
-     igraph            1.3.1    2022-04-20 [1] CRAN (R 4.0.4)
-     irlba             2.3.5    2021-12-06 [1] CRAN (R 4.0.2)
-     jpeg              0.1-9    2021-07-24 [1] CRAN (R 4.0.2)
-     jsonlite          1.8.0    2022-02-22 [1] CRAN (R 4.0.5)
-     KernSmooth        2.23-18  2020-10-29 [1] CRAN (R 4.0.2)
-     knitr             1.39     2022-04-26 [1] CRAN (R 4.0.4)
-     labeling          0.4.2    2020-10-20 [1] CRAN (R 4.0.2)
-     later             1.3.0    2021-08-18 [1] CRAN (R 4.0.2)
-     lattice           0.20-41  2020-04-02 [1] CRAN (R 4.0.2)
-     latticeExtra      0.6-29   2019-12-19 [1] CRAN (R 4.0.2)
-     lazyeval          0.2.2    2019-03-15 [1] CRAN (R 4.0.2)
-     leiden            0.4.2    2022-05-09 [1] CRAN (R 4.0.4)
-     lifecycle         1.0.1    2021-09-24 [1] CRAN (R 4.0.2)
-     listenv           0.8.0    2019-12-05 [1] CRAN (R 4.0.2)
-     lme4              1.1-29   2022-04-07 [1] CRAN (R 4.0.4)
-     lmtest            0.9-40   2022-03-21 [1] CRAN (R 4.0.5)
-     magrittr          2.0.3    2022-03-30 [1] CRAN (R 4.0.5)
-     MASS              7.3-53.1 2021-02-12 [1] CRAN (R 4.0.2)
-     Matrix            1.4-1    2022-03-23 [1] CRAN (R 4.0.5)
-     matrixStats       0.62.0   2022-04-19 [1] CRAN (R 4.0.4)
-     mgcv              1.8-34   2021-02-16 [1] CRAN (R 4.0.2)
-     mice              3.14.0   2021-11-24 [1] CRAN (R 4.0.2)
-     mime              0.12     2021-09-28 [1] CRAN (R 4.0.2)
-     miniUI            0.1.1.1  2018-05-18 [1] CRAN (R 4.0.2)
-     minqa             1.2.4    2014-10-09 [1] CRAN (R 4.0.2)
-     munsell           0.5.0    2018-06-12 [1] CRAN (R 4.0.2)
-     nlme              3.1-152  2021-02-04 [1] CRAN (R 4.0.2)
-     nloptr            2.0.0    2022-01-26 [1] CRAN (R 4.0.5)
-     nnet              7.3-15   2021-01-24 [1] CRAN (R 4.0.2)
-     openssl           2.0.0    2022-03-02 [1] CRAN (R 4.0.5)
-     parallelly        1.31.1   2022-04-22 [1] CRAN (R 4.0.4)
-     patchwork         1.1.1    2020-12-17 [1] CRAN (R 4.0.2)
-     pbapply           1.5-0    2021-09-16 [1] CRAN (R 4.0.2)
-     pillar            1.7.0    2022-02-01 [1] CRAN (R 4.0.5)
-     pkgconfig         2.0.3    2019-09-22 [1] CRAN (R 4.0.2)
-     plotly            4.10.0   2021-10-09 [1] CRAN (R 4.0.2)
-     plyr              1.8.7    2022-03-24 [1] CRAN (R 4.0.5)
-     png               0.1-7    2013-12-03 [1] CRAN (R 4.0.2)
-     polyclip          1.10-0   2019-03-14 [1] CRAN (R 4.0.2)
-     progressr         0.10.0   2021-12-19 [1] CRAN (R 4.0.2)
-     promises          1.2.0.1  2021-02-11 [1] CRAN (R 4.0.2)
-     purrr             0.3.4    2020-04-17 [1] CRAN (R 4.0.2)
-     R6                2.5.1    2021-08-19 [1] CRAN (R 4.0.2)
-     RANN              2.6.1    2019-01-08 [1] CRAN (R 4.0.2)
-     RColorBrewer      1.1-3    2022-04-03 [1] CRAN (R 4.0.4)
-     Rcpp              1.0.8.3  2022-03-17 [1] CRAN (R 4.0.5)
-     RcppAnnoy         0.0.19   2021-07-30 [1] CRAN (R 4.0.2)
-     reshape2          1.4.4    2020-04-09 [1] CRAN (R 4.0.2)
-     reticulate        1.25     2022-05-11 [1] CRAN (R 4.0.4)
-     rgdal             1.5-23   2021-02-03 [1] CRAN (R 4.0.2)
-     rgeos             0.5-9    2021-12-15 [1] CRAN (R 4.0.2)
-     rlang             1.0.2    2022-03-04 [1] CRAN (R 4.0.5)
-     rmarkdown         2.14     2022-04-25 [1] CRAN (R 4.0.4)
-     ROCR              1.0-11   2020-05-02 [1] CRAN (R 4.0.2)
-     rpart             4.1-15   2019-04-12 [1] CRAN (R 4.0.2)
-     rprojroot         2.0.3    2022-04-02 [1] CRAN (R 4.0.5)
-     RSpectra          0.16-1   2022-04-24 [1] CRAN (R 4.0.4)
-     rstudioapi        0.13     2020-11-12 [1] CRAN (R 4.0.2)
-     Rtsne             0.16     2022-04-17 [1] CRAN (R 4.0.4)
-     scales            1.2.0    2022-04-13 [1] CRAN (R 4.0.4)
-     scattermore       0.8      2022-02-14 [1] CRAN (R 4.0.5)
-     sctransform       0.3.3    2022-01-13 [1] CRAN (R 4.0.5)
-     sessioninfo       1.1.1    2018-11-05 [1] CRAN (R 4.0.2)
-     Seurat          * 4.1.1    2022-05-02 [1] CRAN (R 4.0.4)
-     SeuratObject    * 4.1.0    2022-05-01 [1] CRAN (R 4.0.4)
-     shiny             1.7.1    2021-10-02 [1] CRAN (R 4.0.2)
-     sp              * 1.4-7    2022-04-20 [1] CRAN (R 4.0.4)
-     spatstat.core     2.4-2    2022-04-01 [1] CRAN (R 4.0.5)
-     spatstat.data     2.2-0    2022-04-18 [1] CRAN (R 4.0.4)
-     spatstat.geom     2.4-0    2022-03-29 [1] CRAN (R 4.0.5)
-     spatstat.random   2.2-0    2022-03-30 [1] CRAN (R 4.0.5)
-     spatstat.sparse   2.1-1    2022-04-18 [1] CRAN (R 4.0.4)
-     spatstat.utils    2.3-1    2022-05-06 [1] CRAN (R 4.0.4)
-     stringi           1.7.6    2021-11-29 [1] CRAN (R 4.0.2)
-     stringr           1.4.0    2019-02-10 [1] CRAN (R 4.0.2)
-     SuperCell       * 1.0      2022-05-20 [1] local         
-     survival          3.2-7    2020-09-28 [1] CRAN (R 4.0.2)
-     tensor            1.5      2012-05-05 [1] CRAN (R 4.0.2)
-     tibble            3.1.7    2022-05-03 [1] CRAN (R 4.0.4)
-     tidyr             1.2.0    2022-02-01 [1] CRAN (R 4.0.5)
-     tidyselect        1.1.2    2022-02-21 [1] CRAN (R 4.0.5)
-     umap              0.2.7.0  2020-11-04 [1] CRAN (R 4.0.2)
-     utf8              1.2.2    2021-07-24 [1] CRAN (R 4.0.2)
-     uwot              0.1.11   2021-12-02 [1] CRAN (R 4.0.2)
-     vctrs             0.4.1    2022-04-13 [1] CRAN (R 4.0.4)
-     viridisLite       0.4.0    2021-04-13 [1] CRAN (R 4.0.2)
-     weights           1.0.4    2021-06-10 [1] CRAN (R 4.0.2)
-     withr             2.5.0    2022-03-03 [1] CRAN (R 4.0.5)
-     xfun              0.31     2022-05-10 [1] CRAN (R 4.0.4)
-     xml2              1.3.2    2020-04-23 [1] CRAN (R 4.0.2)
-     xtable            1.8-4    2019-04-21 [1] CRAN (R 4.0.2)
-     yaml              2.3.5    2022-02-21 [1] CRAN (R 4.0.5)
-     zoo               1.8-10   2022-04-15 [1] CRAN (R 4.0.4)
+     package         * version  date (UTC) lib source
+     abind             1.4-5    2016-07-21 [1] CRAN (R 4.1.0)
+     anndata         * 0.7.5.2  2021-09-22 [1] local
+     askpass           1.1      2019-01-13 [1] CRAN (R 4.1.0)
+     assertthat        0.2.1    2019-03-21 [1] CRAN (R 4.1.0)
+     backports         1.4.1    2021-12-13 [1] CRAN (R 4.1.1)
+     base64enc         0.1-3    2015-07-28 [1] CRAN (R 4.1.0)
+     boot              1.3-28   2021-05-03 [1] CRAN (R 4.1.0)
+     broom             0.8.0    2022-04-13 [1] CRAN (R 4.1.3)
+     checkmate         2.1.0    2022-04-21 [1] CRAN (R 4.1.3)
+     cli               3.3.0    2022-04-25 [1] CRAN (R 4.1.3)
+     clipr             0.8.0    2022-02-22 [1] CRAN (R 4.1.2)
+     cluster           2.1.3    2022-03-28 [1] CRAN (R 4.1.2)
+     codetools         0.2-18   2020-11-04 [1] CRAN (R 4.1.0)
+     colorspace        2.0-3    2022-02-21 [1] CRAN (R 4.1.2)
+     corpcor           1.6.10   2021-09-16 [1] CRAN (R 4.1.1)
+     cowplot           1.1.1    2020-12-30 [1] CRAN (R 4.1.0)
+     crayon            1.5.1    2022-03-26 [1] CRAN (R 4.1.2)
+     data.table        1.14.2   2021-09-27 [1] CRAN (R 4.1.1)
+     deldir            1.0-6    2021-10-23 [1] CRAN (R 4.1.1)
+     desc              1.4.1    2022-03-06 [1] CRAN (R 4.1.2)
+     details           0.3.0    2022-03-27 [1] CRAN (R 4.1.2)
+     digest            0.6.29   2021-12-01 [1] CRAN (R 4.1.1)
+     dplyr           * 1.0.9    2022-04-28 [1] CRAN (R 4.1.3)
+     ellipsis          0.3.2    2021-04-29 [1] CRAN (R 4.1.0)
+     evaluate          0.15     2022-02-18 [1] CRAN (R 4.1.2)
+     fansi             1.0.3    2022-03-24 [1] CRAN (R 4.1.2)
+     farver            2.1.0    2021-02-28 [1] CRAN (R 4.1.0)
+     fastmap           1.1.0    2021-01-25 [1] CRAN (R 4.1.0)
+     fitdistrplus      1.1-8    2022-03-10 [1] CRAN (R 4.1.2)
+     foreign           0.8-82   2022-01-13 [1] CRAN (R 4.1.2)
+     Formula           1.2-4    2020-10-16 [1] CRAN (R 4.1.0)
+     future            1.26.1   2022-05-27 [1] CRAN (R 4.1.3)
+     future.apply      1.9.0    2022-04-25 [1] CRAN (R 4.1.3)
+     gdata             2.18.0.1 2022-05-10 [1] CRAN (R 4.1.3)
+     generics          0.1.2    2022-01-31 [1] CRAN (R 4.1.2)
+     ggplot2           3.3.6    2022-05-03 [1] CRAN (R 4.1.3)
+     ggrepel           0.9.1    2021-01-15 [1] CRAN (R 4.1.0)
+     ggridges          0.5.3    2021-01-08 [1] CRAN (R 4.1.0)
+     globals           0.15.0   2022-05-09 [1] CRAN (R 4.1.3)
+     glue              1.6.2    2022-02-24 [1] CRAN (R 4.1.2)
+     goftest           1.2-3    2021-10-07 [1] CRAN (R 4.1.1)
+     gridExtra         2.3      2017-09-09 [1] CRAN (R 4.1.0)
+     gtable            0.3.0    2019-03-25 [1] CRAN (R 4.1.0)
+     gtools            3.9.2.1  2022-05-23 [1] CRAN (R 4.1.3)
+     here              1.0.1    2020-12-13 [1] CRAN (R 4.1.0)
+     highr             0.9      2021-04-16 [1] CRAN (R 4.1.0)
+     Hmisc             4.7-0    2022-04-19 [1] CRAN (R 4.1.3)
+     htmlTable         2.4.0    2022-01-04 [1] CRAN (R 4.1.2)
+     htmltools         0.5.2    2021-08-25 [1] CRAN (R 4.1.1)
+     htmlwidgets       1.5.4    2021-09-08 [1] CRAN (R 4.1.1)
+     httpuv            1.6.5    2022-01-05 [1] CRAN (R 4.1.2)
+     httr              1.4.3    2022-05-04 [1] CRAN (R 4.1.3)
+     ica               1.0-2    2018-05-24 [1] CRAN (R 4.1.0)
+     igraph            1.3.1    2022-04-20 [1] CRAN (R 4.1.3)
+     irlba             2.3.5    2021-12-06 [1] CRAN (R 4.1.1)
+     jpeg              0.1-9    2021-07-24 [1] CRAN (R 4.1.1)
+     jsonlite          1.8.0    2022-02-22 [1] CRAN (R 4.1.2)
+     KernSmooth        2.23-20  2021-05-03 [1] CRAN (R 4.1.0)
+     knitr             1.39     2022-04-26 [1] CRAN (R 4.1.3)
+     labeling          0.4.2    2020-10-20 [1] CRAN (R 4.1.2)
+     later             1.2.0    2021-04-23 [1] CRAN (R 4.1.0)
+     lattice           0.20-45  2021-09-22 [1] CRAN (R 4.1.1)
+     latticeExtra      0.6-29   2019-12-19 [1] CRAN (R 4.1.0)
+     lazyeval          0.2.2    2019-03-15 [1] CRAN (R 4.1.0)
+     leiden            0.4.2    2022-05-09 [1] CRAN (R 4.1.3)
+     lifecycle         1.0.1    2021-09-24 [1] CRAN (R 4.1.1)
+     listenv           0.8.0    2019-12-05 [1] CRAN (R 4.1.0)
+     lme4              1.1-29   2022-04-07 [1] CRAN (R 4.1.3)
+     lmtest            0.9-40   2022-03-21 [1] CRAN (R 4.1.2)
+     magrittr          2.0.3    2022-03-30 [1] CRAN (R 4.1.3)
+     MASS              7.3-57   2022-04-22 [1] CRAN (R 4.1.3)
+     Matrix            1.4-1    2022-03-23 [1] CRAN (R 4.1.2)
+     matrixStats       0.62.0   2022-04-19 [1] CRAN (R 4.1.3)
+     mgcv              1.8-40   2022-03-29 [1] CRAN (R 4.1.3)
+     mice              3.14.0   2021-11-24 [1] CRAN (R 4.1.1)
+     mime              0.12     2021-09-28 [1] CRAN (R 4.1.1)
+     miniUI            0.1.1.1  2018-05-18 [1] CRAN (R 4.1.0)
+     minqa             1.2.4    2014-10-09 [1] CRAN (R 4.1.0)
+     munsell           0.5.0    2018-06-12 [1] CRAN (R 4.1.2)
+     nlme              3.1-157  2022-03-25 [1] CRAN (R 4.1.2)
+     nloptr            2.0.3    2022-05-26 [1] CRAN (R 4.1.3)
+     nnet              7.3-17   2022-01-13 [1] CRAN (R 4.1.2)
+     openssl           2.0.2    2022-05-24 [1] CRAN (R 4.1.3)
+     parallelly        1.31.1   2022-04-22 [1] CRAN (R 4.1.3)
+     patchwork         1.1.1    2020-12-17 [1] CRAN (R 4.1.0)
+     pbapply           1.5-0    2021-09-16 [1] CRAN (R 4.1.1)
+     pillar            1.7.0    2022-02-01 [1] CRAN (R 4.1.2)
+     pkgconfig         2.0.3    2019-09-22 [1] CRAN (R 4.1.0)
+     plotly            4.10.0   2021-10-09 [1] CRAN (R 4.1.1)
+     plyr              1.8.7    2022-03-24 [1] CRAN (R 4.1.2)
+     png               0.1-7    2013-12-03 [1] CRAN (R 4.1.0)
+     polyclip          1.10-0   2019-03-14 [1] CRAN (R 4.1.0)
+     progressr         0.10.0   2021-12-19 [1] CRAN (R 4.1.2)
+     promises          1.2.0.1  2021-02-11 [1] CRAN (R 4.1.0)
+     purrr             0.3.4    2020-04-17 [1] CRAN (R 4.1.0)
+     R6                2.5.1    2021-08-19 [1] CRAN (R 4.1.1)
+     RANN              2.6.1    2019-01-08 [1] CRAN (R 4.1.0)
+     RColorBrewer      1.1-3    2022-04-03 [1] CRAN (R 4.1.3)
+     Rcpp              1.0.8.3  2022-03-17 [1] CRAN (R 4.1.2)
+     RcppAnnoy         0.0.19   2021-07-30 [1] CRAN (R 4.1.0)
+     reshape2          1.4.4    2020-04-09 [1] CRAN (R 4.1.0)
+     reticulate        1.25     2022-05-11 [1] CRAN (R 4.1.3)
+     rgeos             0.5-9    2021-12-15 [1] CRAN (R 4.1.2)
+     rlang             1.0.2    2022-03-04 [1] CRAN (R 4.1.2)
+     rmarkdown         2.14     2022-04-25 [1] CRAN (R 4.1.3)
+     ROCR              1.0-11   2020-05-02 [1] CRAN (R 4.1.0)
+     rpart             4.1.16   2022-01-24 [1] CRAN (R 4.1.2)
+     rprojroot         2.0.3    2022-04-02 [1] CRAN (R 4.1.3)
+     RSpectra          0.16-1   2022-04-24 [1] CRAN (R 4.1.3)
+     rstudioapi        0.13     2020-11-12 [1] CRAN (R 4.1.0)
+     Rtsne             0.16     2022-04-17 [1] CRAN (R 4.1.3)
+     scales            1.2.0    2022-04-13 [1] CRAN (R 4.1.3)
+     scattermore       0.8      2022-02-14 [1] CRAN (R 4.1.2)
+     sctransform       0.3.3    2022-01-13 [1] CRAN (R 4.1.2)
+     sessioninfo       1.2.2    2021-12-06 [1] CRAN (R 4.1.1)
+     Seurat          * 4.1.1    2022-05-02 [1] CRAN (R 4.1.3)
+     SeuratObject    * 4.1.0    2022-05-01 [1] CRAN (R 4.1.3)
+     shiny             1.7.1    2021-10-02 [1] CRAN (R 4.1.1)
+     sp              * 1.4-7    2022-04-20 [1] CRAN (R 4.1.3)
+     spatstat.core     2.4-4    2022-05-18 [1] CRAN (R 4.1.3)
+     spatstat.data     2.2-0    2022-04-18 [1] CRAN (R 4.1.3)
+     spatstat.geom     2.4-0    2022-03-29 [1] CRAN (R 4.1.3)
+     spatstat.random   2.2-0    2022-03-30 [1] CRAN (R 4.1.3)
+     spatstat.sparse   2.1-1    2022-04-18 [1] CRAN (R 4.1.3)
+     spatstat.utils    2.3-1    2022-05-06 [1] CRAN (R 4.1.3)
+     stringi           1.7.6    2021-11-29 [1] CRAN (R 4.1.3)
+     stringr           1.4.0    2019-02-10 [1] CRAN (R 4.1.0)
+     SuperCell       * 1.0      2022-05-31 [1] Github (GfellerLab/SuperCell@49b0119)
+     survival          3.3-1    2022-03-03 [1] CRAN (R 4.1.2)
+     tensor            1.5      2012-05-05 [1] CRAN (R 4.1.0)
+     tibble            3.1.7    2022-05-03 [1] CRAN (R 4.1.3)
+     tidyr             1.2.0    2022-02-01 [1] CRAN (R 4.1.2)
+     tidyselect        1.1.2    2022-02-21 [1] CRAN (R 4.1.2)
+     umap              0.2.8.0  2022-03-23 [1] CRAN (R 4.1.2)
+     utf8              1.2.2    2021-07-24 [1] CRAN (R 4.1.0)
+     uwot              0.1.11   2021-12-02 [1] CRAN (R 4.1.1)
+     vctrs             0.4.1    2022-04-13 [1] CRAN (R 4.1.3)
+     viridisLite       0.4.0    2021-04-13 [1] CRAN (R 4.1.0)
+     weights           1.0.4    2021-06-10 [1] CRAN (R 4.1.0)
+     withr             2.5.0    2022-03-03 [1] CRAN (R 4.1.2)
+     xfun              0.31     2022-05-10 [1] CRAN (R 4.1.3)
+     xml2              1.3.3    2021-11-30 [1] CRAN (R 4.1.3)
+     xtable            1.8-4    2019-04-21 [1] CRAN (R 4.1.0)
+     yaml              2.3.5    2022-02-21 [1] CRAN (R 4.1.2)
+     zoo               1.8-10   2022-04-15 [1] CRAN (R 4.1.3)
 
-    [1] /Library/Frameworks/R.framework/Versions/4.0/Resources/library
+     [1] /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/lib/R/library
+
+    ─ Python configuration ───────────────────────────────────────────────────────
+     python:         /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/bin/python3
+     libpython:      /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/lib/libpython3.9.dylib
+     pythonhome:     /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_:/Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_
+     version:        3.9.13 | packaged by conda-forge | (main, May 27 2022, 17:00:52)  [Clang 13.0.1 ]
+     numpy:          /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/lib/python3.9/site-packages/numpy
+     numpy_version:  1.22.4
+     umap:           /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/lib/python3.9/site-packages/umap
+     
+     python versions found: 
+      /Users/mariiabilous/opt/anaconda3/envs/r-reticulate/bin/python
+      /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/bin/python3
+      /Users/mariiabilous/opt/anaconda3/bin/python
+      /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial/bin/python
+      /Users/mariiabilous/opt/anaconda3/envs/metacell_tutorial_/bin/python
+      /Users/mariiabilous/opt/anaconda3/envs/metacells/bin/python
+      /Users/mariiabilous/opt/anaconda3/envs/py38/bin/python
+      /Users/mariiabilous/opt/anaconda3/envs/seacells/bin/python
+
+    ──────────────────────────────────────────────────────────────────────────────
 
 </details>
 
