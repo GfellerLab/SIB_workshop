@@ -23,19 +23,19 @@ library(reshape2)
 
 
 ```
-In this tutorial we will make a short reanalysis of large single cell transcriptome atlas of COVID19 (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7857060/) at the metacell level. The orignal study gathered 1.4 millions of cells distributed in 284 samples coming from 196 patients. Here we will focus on a subset of 26 fresh PBMC samples.
+In this tutorial we will make a short reanalysis of a large [single cell transcriptome atlas of COVID19](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7857060/) at the metacell level. The orignal study gathered 1.4 millions of cells distributed in 284 samples coming from 196 patients. Here we will focus on a subset of 26 fresh PBMC samples.
 
 ## Analysis of one sample from covid 19 dataset
 
-We start by analyzing a fresh PBMC sample from an aged patient that deceased from a severe
-We will mainly consider the the fist cell annotation to major PBMC cell types coming from the original study ('majorType' column in the metadata).
+We start by analyzing a fresh PBMC sample from an aged patient that deceased from a severe COVID 19.
+We will mainly consider  the fist cell annotation to major PBMC cell types coming from the original study ('majorType' column in the metadata).
 
 As in the original study we will discard immunoglobuline, ribosomal protein and mitochondrial genes for the dimension reduction analysis and the metacell construction.
-These gene lists of genes were retrieved from the www.genenames.org website.
-In this tutorial we provide you the whole gene blacklist as an R object.
+
+These gene lists of genes were retrieved from the [genenames website](www.genenames.org). In this tutorial we provide you the whole gene blacklist as an R object.
 
 ```{r}
-gene_blacklist <- readRDS("gene_blacklist.rds")
+gene_blacklist <- readRDS("data/gene_blacklist.rds")
 ```
 
 # Analysis at the single cell level with Seurat
@@ -43,18 +43,19 @@ gene_blacklist <- readRDS("gene_blacklist.rds")
 Quality control (gene/cell filtering) was already done in the original study. We go directly to dimension reduction on highly variable genes
 
 ```{r}
-pbmc <- readRDS("pbmc_COVID19_sce/S-S086-2_sce.rds")
+pbmc <- readRDS("data/pbmc_COVID19_sce/S-S086-2_sce.rds")
 
 sceRawToSeurat<- function(pbmc,nfeatures = 1500) {
 pbmc <- CreateSeuratObject(counts = assay(pbmc),meta.data = data.frame(colData(pbmc)))
 pbmc <- FindVariableFeatures(pbmc,nfeatures = nfeatures)
 VariableFeatures(pbmc) <- VariableFeatures(pbmc)[!VariableFeatures(pbmc) %in% gene_blacklist]
 pbmc <- NormalizeData(pbmc)
-#ElbowPlot(pbmc)
 }
 
 pbmc <- sceRawToSeurat(pbmc)
 ```
+
+First we can do a Principal Component Analysis (PCA) of this sample with the Seurat package.
 
 ```{r}
 pbmc <- ScaleData(pbmc)
@@ -116,17 +117,19 @@ seuratSC <- makeSeuratSC(pbmc)
 
 
 We use the Seurat workflow to analyse the sample at the metacell level.
-Data scaling and PCA computation are weighted according to metacell size with the `supercell_2_Seurat`function we just used. 
+Data scaling and PCA computation are weighted according to metacell size with the `supercell_2_Seurat` function we just used. 
 
 ```{r}
 seuratSC <- RunUMAP(seuratSC,dims = c(1:20))
 ```
-We compute the UMAP dimension reduction on the weighted PCA results for vizualisation. 
+
+We compute the UMAP dimension reduction on the weighted PCA results for visualization. 
 ```{r}
 UMAPPlot(seuratSC,group.by = "majorType")
 ```
+
 We can use the Seurat workflow without taking into account the sample weights by restarting from the data scaling step.
-This will overwrite the weigted downstream analysis resutls in the Seurat object.
+This will overwrite the weighted downstream analysis results in the Seurat object.
 
 ```{r}
 seuratSC <- ScaleData(seuratSC)
@@ -141,16 +144,17 @@ To be noted that the splits in the CD8 and DC majorType assigned metacells can b
 UMAPPlot(seuratSC,group.by = "celltype") + NoLegend()
 ```
 
-
 We can check the distribution of metacell purities and sizes obtained.
 
 ```{r}
 ggplot(seuratSC@meta.data,aes(x=orig.ident,y=purity)) + geom_boxplot() + 
   ggplot(seuratSC@meta.data,aes(x=orig.ident,y=size)) + geom_boxplot() 
 ```
+
 We can see that metacell purity can highly depend on the PBMC type.
 To completely match the original study results one possible strategy is to make metacells per PBMC types.
-This will results in completely pure metacell according to the original annotation. 
+This will results in completely pure metacells according to the original annotation. 
+
 ```{r}
 ggplot(seuratSC@meta.data,aes(x=majorType,y=purity,fill = majorType)) + geom_boxplot()
 ```
@@ -158,9 +162,9 @@ ggplot(seuratSC@meta.data,aes(x=majorType,y=purity,fill = majorType)) + geom_box
 
 # Data integration at the metacell level
 
-We wiil now integrate at the metacell level a subset of 26 sample of fresh PBMCs from the original study gathering around 200 000 cells.
+We will now integrate at the metacell level a subset of 26 sample of fresh PBMCs from the original study gathering around 200 000 cells.
 We will use a gamma of 20 (10 000 metacells).
-16 GB of memory should be enough to conduct this analysis with both seurat and harmony integration methods whereas it would be impossible to analyze an R object of 200 000 cells with a laptop.
+16 GB of memory should be enough to conduct this analysis with both Seurat and Harmony integration methods whereas it would be impossible to analyze an R object of 200 000 cells with a laptop.
 
 ```{r}
 files <- list.files("pbmc_COVID19_sce",full.names = T)
@@ -186,7 +190,7 @@ features <- features[!features %in% gene_blacklist]
 
 # Seurat integration workflow
 
-Firs we will use the seurat integration workflow for large datasets which uses a reference based integration and the RPCA reduction dimension method (https://satijalab.org/seurat/articles/integration_large_datasets.html)
+First we will use the Seurat [integration workflow for large datasets]((https://satijalab.org/seurat/articles/integration_large_datasets.html)) using a reference based integration and the RPCA reduction dimension method 
 
 ```{r}
 
@@ -199,7 +203,7 @@ for (i in 1:length(SC.list)) {
 ```
 
 
-The subset of samples come from male and female patient. 
+The subset of samples come from male and female patients. 
 As gender is often a large source of variation at the transcriptomic level, we will use the largest male and female samples as reference.
 
 ```{r}
@@ -220,7 +224,7 @@ integrated <- IntegrateData(anchorset = anchors, dims = 1:20)
 
 ```
 
-We can now use the calssical seurat workflow on the integrated object
+We can now use the classical Seurat workflow on the integrated object
 
 ```{r}
 DefaultAssay(integrated) = "integrated"
@@ -229,7 +233,7 @@ integrated <- RunPCA(integrated, verbose = FALSE)
 integrated <- RunUMAP(integrated, dims = 1:20)
 ```
 
-We check that our integration correctly mixed the different samples in the reducded space by preserving differences between the different PBMC types.
+We check that our integration correctly mixed the different samples in the reduced space by preserving differences between the different PBMC types.
 We can also check that we don't have a gender effect in the integrated data.
 
 ```{r}
@@ -240,7 +244,8 @@ UMAPPlot(integrated,group.by = "majorType")
 UMAPPlot(integrated,group.by = "Sex")
 
 ```
-Now we will use harmony, an other integration method.
+
+Now we will use [Harmony](https://www.nature.com/articles/s41592-019-0619-0), an other integration method. We will use it inside the [Seurat framework](https://htmlpreview.github.io/?https://github.com/satijalab/seurat.wrappers/blob/master/docs/harmony.html)
 
 ```{r}
 DefaultAssay(integrated) <- "RNA"
@@ -258,6 +263,7 @@ integrated <- RunUMAP(integrated,reduction = "harmony",
 DimPlot(integrated,group.by = "sampleID", reduction = "umap_harmony")
 DimPlot(integrated,group.by = "majorType", reduction = "umap_harmony")
 ```
+
 As previously for the S-S086-2 sample, the splits in the CD8 and DC assigned metacells can be explained by the second level of clustering provided in the original study (`celltype` column in the metadata).
 
 ```{r}
@@ -265,7 +271,7 @@ DimPlot(integrated[,integrated$majorType == "DC"],group.by = "celltype", reducti
 DimPlot(integrated[,integrated$celltype == "T_CD8_c10-MKI67-GZMK"],group.by = "celltype", reduction = "umap_harmony",label = F) 
 ```
 
-The original study mainly focused on the analysis of cell type variation according to COVID19 severity (control, mild/moderate, severe) and the time of sampling (controle, progression, convalescence).
+The original study mainly focused on the analysis of cell type variation according to COVID19 severity (control, mild/moderate, severe) and the time of sampling (control, progression, convalescence).
 
 ```{r}
 DimPlot(integrated,group.by = "Sample.time", reduction = "umap_harmony") 
@@ -273,7 +279,7 @@ DimPlot(integrated,group.by = "CoVID.19.severity", reduction = "umap_harmony")
 ```
 
 In this tutorial we will make a short analysis of this at the metacell level regarding the first level of annotation (PMBC major type). We can compute the observed versus expected cell number ratio for each PBMC type for the different condition.
-We have to take into account the supercell size for this analyis.
+We have to take into account the supercell size for this analysis.
 
 ```{r}
 majorTypeCounts <- aggregate(integrated$size, by=list(majorType = integrated$majorType,Severity = integrated$CoVID.19.severity,Time = integrated$Sample.time), FUN=sum)
@@ -290,6 +296,7 @@ res <- chisq.test(contingencyTable)
 
 Roe <- res$observed/res$expected
 ```
+
 As in the original study we observe an increase in the Megakaryocytes cell proportion during the progression of severe/critical COVID compare to the other condition.
 
 ```{r}
@@ -305,7 +312,7 @@ ggplot(data = melted_Roe, aes(majorType,group, , fill = value))+
  coord_fixed()
 ```
 
-We can do a differentially expressed gene analysis to characterized the gene markers of this population that seems to support progression of severe/critical COVID. We perform this analysis at the metacell level (on averaged normalized counts per metacells).
+We can do a differentially expressed gene analysis to characterized the gene markers of this population that seems to support progression of severe/critical COVID. We perform this analysis at the metacell level (on averaged normalized counts per metacell).
 
 ```{r}
 Idents(integrated) <- "majorType"
@@ -313,7 +320,8 @@ markersMega <- FindMarkers(integrated,ident.1 = "Mega",only.pos = T)
 markersMega <- markersMega[markersMega$p_val_adj< 0.05,]
 markersMega[order(markersMega$avg_log2FC,decreasing = T),]
 ```
-We retrieved the gene coding for inflammatory cytokines highlited in the original study.
+
+We retrieved the gene coding for inflammatory cytokines highlighted in the original study.
 
 ```{r}
 cytokines_Mega_ori_study <- c("PDGFA","TGFB1","TNFSF4","PF4V1","PF4","PPBP")
@@ -321,7 +329,9 @@ cytokines_Mega_ori_study %in% rownames(markersMega)
 Idents(integrated) <- "majorType"
 VlnPlot(integrated, features = cytokines_Mega_ori_study,pt.size = 0.1)
 ```
+
 We can compare with the expression of these cytokines in the S-S086-2 sample at the single cell and the metacell level.
+
 ```{r}
 
 Idents(SC.list[["S-S086-2"]]) <- "majorType"
