@@ -102,22 +102,33 @@ And 2 notebooks to build metacells using alternative methods:
 
 We expect you to have RStudio and R \> 4.0.0 to be installed.
 
-For the smooth run of the tutorial, we ask you to install the following
-conda environment by running:
+For the smooth run of the tutorial, we ask you:
+
+1.  to clone this repository:
 
 ``` bash
-> 
+gh repo clone GfellerLab/SIB_workshop
 ```
 
-Cloning this repository to run the workbooks:
-
-``` r
->
-```
-
-And downloading data and pre-processed objects of Metacell-2 and SEACell
-outputs into `/data` folder:
+2.  to download data and pre-processed objects of Metacell-2 and SEACell
+    outputs into `/data` folder:
 
 ``` r
 > 
 ```
+
+3.  to install and activate the following conda environment by running:
+
+``` bash
+conda env create -n metacell_tutorial --file environment.yml
+
+conda activate metacell_tutorial 
+```
+
+4.  to run RStudio
+
+``` bach
+open -na Rstudio
+```
+
+5.  and to open file `/workbooks/Cell_lines.Rmd`.
