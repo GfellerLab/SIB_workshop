@@ -35,7 +35,7 @@ As in the original study we will discard immunoglobuline, ribosomal protein and 
 These gene lists of genes were retrieved from the [genenames website](www.genenames.org). In this tutorial we provide you the whole gene blacklist as an R object.
 
 ```{r}
-gene_blacklist <- readRDS("data/gene_blacklist.rds")
+gene_blacklist <- readRDS("../data/gene_blacklist.rds")
 ```
 
 # Analysis at the single cell level with Seurat
@@ -43,7 +43,7 @@ gene_blacklist <- readRDS("data/gene_blacklist.rds")
 Quality control (gene/cell filtering) was already done in the original study. We go directly to dimension reduction on highly variable genes
 
 ```{r}
-pbmc <- readRDS("data/pbmc_COVID19_sce/S-S086-2_sce.rds")
+pbmc <- readRDS("../data/pbmc_COVID19_sce/S-S086-2_sce.rds")
 
 sceRawToSeurat<- function(pbmc,nfeatures = 1500) {
 pbmc <- CreateSeuratObject(counts = assay(pbmc),meta.data = data.frame(colData(pbmc)))
@@ -159,6 +159,29 @@ This will results in completely pure metacells according to the original annotat
 ggplot(seuratSC@meta.data,aes(x=majorType,y=purity,fill = majorType)) + geom_boxplot()
 ```
 
+# gene correlation analysis
+
+```{r}
+gene<-as.matrix(GetAssayData(seuratSC)["CXCL8",])
+correlations<-apply(as.matrix(GetAssayData(seuratSC)),1,function(x){cor(gene,x)})
+
+tf <- read.table("../../../Documents/testScenic/auxData/transcription.factor.activity.GO0003700.symbol.list")
+
+correlations <- correlations[names(correlations) %in% tf$V1]
+head(sort(abs(correlations),decreasing = T),n = 10)
+```
+
+
+```{r}
+FeatureScatter(object = pbmc, feature1 = "CXCL8", feature2 = 'FOS',group.by = "majorType")
+
+FeatureScatter(object = seuratSC, feature1 = "CXCL8", feature2 = 'FOS',group.by = "majorType")
+```
+```{r}
+FeatureScatter(object = pbmc[,pbmc$majorType %in% c("NK","CD8")], feature1 = "JUN", feature2 = 'CCL4',group.by = "majorType")
+
+FeatureScatter(object = seuratSC[,seuratSC$majorType %in% c("NK","CD8")], feature1 = "JUN", feature2 = 'CCL4',group.by = "majorType",)
+```
 
 # Data integration at the metacell level
 
