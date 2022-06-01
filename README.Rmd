@@ -67,8 +67,10 @@ gh repo clone GfellerLab/SIB_workshop
 ```
 
 2. to download data and pre-processed objects of Metacell-2 and SEACell outputs into `/data` folder:
-```{r eval=FALSE, include=TRUE}
-> 
+```{bash eval=FALSE, include=TRUE}
+cd SIB_workshop
+curl https://drive.switch.ch/index.php/s/rOofK4o9QqFm8Gb/download -O data.zip
+unzip data.zip
 ```
 
 3. to install and activate the following conda environment by running:
