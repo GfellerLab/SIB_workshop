@@ -69,7 +69,7 @@ gh repo clone GfellerLab/SIB_workshop
 2. to download data and pre-processed objects of Metacell-2 and SEACell outputs into `/data` folder:
 ```{bash eval=FALSE, include=TRUE}
 cd SIB_workshop
-curl https://drive.switch.ch/index.php/s/rOofK4o9QqFm8Gb/download -O data.zip
+curl -o data.zip https://drive.switch.ch/index.php/s/rOofK4o9QqFm8Gb/download
 unzip data.zip
 ```
 
