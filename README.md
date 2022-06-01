@@ -33,8 +33,7 @@ large-scale single-cell data
 
 ![](plots/1.png)<!-- -->
 
-The simplification is performed at a specific **graining level**
-(![\\gamma](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Cgamma "\gamma")),
+The simplification is performed at a specific **graining level** (*γ*),
 which we define as a ratio between the number of single cells in the
 initial data and the number of metacells. Depending on the
 simplification method, the graining level can be either specified by a
@@ -113,8 +112,10 @@ gh repo clone GfellerLab/SIB_workshop
 2.  to download data and pre-processed objects of Metacell-2 and SEACell
     outputs into `/data` folder:
 
-``` r
-> 
+``` bash
+cd SIB_workshop
+curl -o data.zip https://drive.switch.ch/index.php/s/rOofK4o9QqFm8Gb/download
+unzip data.zip
 ```
 
 3.  to install and activate the following conda environment by running:
