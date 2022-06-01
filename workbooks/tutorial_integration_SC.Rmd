@@ -2,7 +2,8 @@
 title: "Metacell integration"
 author: "Leonard Herault"
 date: '2022-05-12'
-output: md_document
+output:
+  html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -231,13 +232,27 @@ supercell_GeneGenePlot(GetAssayData(seuratSC),
 
 # Data integration at the metacell level
 
+*At least 16GB of memory are required to complete this analysis*. 
+
+If you have more than 20GB, you should be able to integrate all the files we provided into `../data/pbmc_COVID19_sce`. (26 data sets, about 200,000 unique cells).
+
+If you have less than 20GB of memory, you should be able to integrate all the male samples (which are more evenly distributed across the different conditions than the female samples). We provide you with the list of male samples in the file `../data/lowMemFileList.rds` (17 data sets, about 130,000 individual cells).
+
+If you have less than 16GB of memory, you can try to integrate a small subset of 5~6 samples, but the downstream analysis we propose will not be very meaningful.
+
 We will now integrate at the metacell level a subset of 26 samples of fresh PBMCs from the original study gathering around 200 000 cells.
-We will use a gamma of 20 (10 000 metacells).
-16 GB of memory should be enough to conduct this analysis with both Seurat and Harmony integration methods whereas it would be impossible to analyze an R object of 200 000 cells with a laptop.
+
+We will use a gamma of 20 (10 000 metacells if you process the 26 data sets).
+
 
 ```{r}
 files <- list.files("../data/pbmc_COVID19_sce",full.names = T)
 
+# Uncomment if you have less than 20GB of memory
+# files <- readRDS("../data/lowMemFileList.rds")
+
+# Uncomment if you less than 16GB of memory
+#files <- files[c(1:6)]
 
 SC.list <- list()
 SC.list[["S-S086-2"]] <- seuratSC
@@ -276,9 +291,8 @@ The subset of samples come from male and female patients.
 As gender is often a large source of variation at the transcriptomic level, we will use the largest male and female samples as reference.
 
 ```{r}
+reference <- which(c("S-S086-2","S-M064") %in% names(SC.list)) 
 
-
-reference <- which(c("S-S086-2","S-M064") %in% names(SC.list))
 
 
   
@@ -314,7 +328,7 @@ UMAPPlot(integrated,group.by = "Sex")
 
 ```
 
-Now we will use [Harmony](https://www.nature.com/articles/s41592-019-0619-0), an other integration method. We will use it inside the [Seurat framework](https://htmlpreview.github.io/?https://github.com/satijalab/seurat.wrappers/blob/master/docs/harmony.html)
+Now we will use [Harmony](https://www.nature.com/articles/s41592-019-0619-0), an other integration method. We will use it inside the [Seurat framework](https://htmlpreview.github.io/?https://github.com/satijalab/seurat.wrappers/blob/master/docs/harmony.html).
 
 ```{r message=FALSE}
 DefaultAssay(integrated) <- "RNA"
@@ -333,7 +347,7 @@ DimPlot(integrated,group.by = "sampleID", reduction = "umap.harmony")
 DimPlot(integrated,group.by = "majorType", reduction = "umap.harmony")
 ```
 
-The original study mainly focused on the analysis of cell type variation according to COVID19 severity (control, mild/moderate, severe) and the time of sampling (control, progression, convalescence).
+The original study mainly focused on the analysis of variations in the cell type composition according to COVID19 severity (control, mild/moderate, severe) and the time of sampling (control, progression, convalescence).
 
 ```{r}
 DimPlot(integrated,group.by = "Sample.time", reduction = "umap.harmony") 
@@ -362,6 +376,18 @@ As in the original study we observe an increase in the Megakaryocytes cell propo
 melted_Roe <- melt(Roe, na.rm = TRUE)
 # Heatmap
 ggplot(data = melted_Roe, aes(majorType,group, , fill = value))+
+ geom_tile() + scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+   midpoint = 1, space = "Lab",
+   name="Ro/e") +
+  theme_minimal()+ 
+ theme(axis.text.x = element_text(angle = 45, vjust = 1, 
+    size = 12, hjust = 1))+
+ coord_fixed()
+```
+Without the few metacell assigned to macrophages found in the control sample that overwrite the results : 
+
+```{r}
+ggplot(data = melted_Roe[melted_Roe$majorType != "Macro",], aes(majorType,group, , fill = value))+
  geom_tile() + scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
    midpoint = 1, space = "Lab",
    name="Ro/e") +
@@ -404,3 +430,29 @@ VlnPlot(SC.list[["S-S086-2"]], features = cytokines_Mega_ori_study,pt.size = 0.1
 ```
 
 
+```{r}
+# sampleList <- str_split_fixed(files,pattern = "/",n=4)[,4]
+# sampleList <- str_split_fixed(sampleList,pattern = "_",n=2)[,1]
+# 
+# sampleLowMem <- unique(integrated$sampleID[integrated$Sex == "M" ])
+# sum(integrated$size[integrated$sampleID %in% sampleLowMem])
+# 
+# sampleLowMemFileList <- files[sampleList %in% sampleLowMem]
+# 
+# saveRDS(sampleLowMemFileList,"../data/lowMemFileList.rds")
+# 
+# sizeAll <- aggregate(integrated@meta.data[,"size"],
+#                       by = list(sampleID = integrated@meta.data[,"sampleID"]),FUN = sum)
+# 
+# sizeAll[order(sizeAll$x),]
+# 
+# sizeF <- aggregate(integrated@meta.data[integrated$Sex == "F","size"],
+#                       by = list(sampleID = integrated@meta.data[integrated$Sex == "F","sampleID"]),FUN = sum)
+# 
+# largestF <- sizeF$sampleID[which.max(sizeF$x)]
+# 
+# sizeH <- aggregate(integrated@meta.data[integrated$Sex == "M","size"],
+#                       by = list(sampleID = integrated@meta.data[integrated$Sex == "M","sampleID"]),FUN = sum)
+# 
+# largestH <- sizeH$sampleID[which.max(sizeH$x)]
+```
