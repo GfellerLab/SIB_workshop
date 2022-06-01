@@ -384,7 +384,7 @@ ggplot(data = melted_Roe, aes(majorType,group, , fill = value))+
     size = 12, hjust = 1))+
  coord_fixed()
 ```
-Without the few metacell assigned to macrophages found in the control sample that overwrite the results : 
+Without the few metacell assigned to macrophages found in the control samples that overwrite the results: 
 
 ```{r}
 ggplot(data = melted_Roe[melted_Roe$majorType != "Macro",], aes(majorType,group, , fill = value))+
