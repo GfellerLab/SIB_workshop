@@ -9,13 +9,13 @@ The exponential scaling of scRNA-seq data represents an important hurdle
 for downstream analyses. One of the solutions to simplify large-scale
 and noisy scRNA-seq data is to merge transcriptionally similar cells
 into *metacells*. The concept was first introduced by [*Baran et al.,
-2019*](https://doi.org/10.1186/s13059-019-1812-2) and by [*Iacono et
-al., 2018*](https://doi:10.1101/gr.230771.117). Other methods to build
+2019*](https://doi.org/10.1186/s13059-019-1812-2) (MetaCell1.0) and by [*Iacono et
+al., 2018*](https://doi:10.1101/gr.230771.117) (bigSCale). More recent methods to build
 *metacells* are presented in [*Ben-Kiki et
-al. 2022*](https://doi.org/10.1186/s13059-022-02667-1), [*Bilous et al.,
-2022*](https://www.biorxiv.org/content/10.1101/2021.06.07.447430v2) and
+al. 2022*](https://doi.org/10.1186/s13059-022-02667-1) (MetaCell2.0), [*Bilous et al.,
+2022*](https://www.biorxiv.org/content/10.1101/2021.06.07.447430v2) (SuperCell) and
 [*Persad et al.,
-2022*](https://www.biorxiv.org/content/10.1101/2022.04.02.486748v1).
+2022*](https://www.biorxiv.org/content/10.1101/2022.04.02.486748v1) (SeaCell).
 Despite some differences in the implementation, all the methods are
 network-based and can be summarized as follows:
 
