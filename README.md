@@ -33,7 +33,7 @@ large-scale single-cell data
 
 ![](plots/1.png)<!-- -->
 
-Unlike clustering, the aim of metacells is not to identify large groups of cells that comprehensively capture biological concepts, like cell types, but to merge cells that share highly similar profiles, and may carry repetitive information. Therefore metacells represent a compromise structure that optimally remove redunant information in scRNA-Seq data while preserving the biologically relevant heterogeneity.
+Unlike clustering, the aim of metacells is not to identify large groups of cells that comprehensively capture biological concepts, like cell types, but to merge cells that share highly similar profiles, and may carry repetitive information. Therefore metacells represent a coarse-grained structure that optimally remove redunant information in scRNA-Seq data while preserving the biologically relevant heterogeneity.
 
 An important concept when building metacells is the **graining level** (*γ*),
 which we define as the ratio between the number of single cells in the
@@ -41,8 +41,7 @@ initial data and the number of metacells. Depending on the
 simplification method, the graining level is either specified by the
 user (in [bigSCale](https://github.com/iaconogi/bigSCale2),
 [SuperCell](https://github.com/GfellerLab/SuperCell) and
-[SEACells](https://github.com/dpeerlab/SEACells)) or imposed by the
-simplification algorithm (in
+[SEACells](https://github.com/dpeerlab/SEACells)) or imposed by the algorithm (in
 [Metacell](https://github.com/tanaylab/metacell) and
 [Metacell-2](https://github.com/tanaylab/metacells)).
 
@@ -52,14 +51,13 @@ We will start with [a first example of how to build and analyse metacells](https
 using a scRNA-Seq dataset of five *cell lines* [Tian et al](https://www.nature.com/articles/s41592-019-0425-8). This
 workbook includes a standard scRNA-seq data analysis pipeline with
 Seurat (i.e., visualization, clustering, differential expression
-analysis, gene-gene correlation) followed by data simplification (i.e.,
-*computing metacells*) and performing the same standard downstream
-analysis for simplified data to compare the results obtained at the
+analysis, gene-gene correlation) followed by computing metacells and performing the same standard downstream
+analysis to compare the results obtained at the
 single-cell and the metacells levels.
 
-The simplification will be done with the algorithm developed in our
+The construction of metacells will be done with the algorithm developed in our
 group, called [SuperCell](https://github.com/GfellerLab/SuperCell), but
-we also provide scripts to simplify the same dataset with other methods,
+we also provide scripts to analyse the same dataset with other methods,
 such as
 [Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
 and
