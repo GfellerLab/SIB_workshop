@@ -23,10 +23,9 @@ network-based and can be summarized as follows:
 similarity (in transcriptomic space)
 
 **2.** Highly similar cells are identified as those forming dense
-regions in the single-cell network
+regions in the single-cell network and merged together into metacells (coarse-graining)
 
-**3.** Transcriptomic information within identified metacells is merged
-(so-called coarse-graining)
+**3.** Transcriptomic information within each metacell is combined (average or sum).
 
 **4.** Metacells are used for the downstream analyses instead of single cells
 
