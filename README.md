@@ -7,7 +7,7 @@ Simplifying large and complex single-cell RNA-Seq data with metacells
 
 The exponential scaling of scRNA-seq data represents an important hurdle
 for downstream analyses. One of the solutions to simplify large-scale
-and noisy scRNA-seq data is to merge transcriptionally similar cells
+and noisy scRNA-seq data is to merge transcriptionally highly similar cells
 into *metacells*. The concept was first introduced by [*Baran et al.,
 2019*](https://doi.org/10.1186/s13059-019-1812-2) (MetaCell1.0) and by [*Iacono et
 al., 2018*](https://doi:10.1101/gr.230771.117) (bigSCale). More recent methods to build
@@ -33,22 +33,23 @@ large-scale single-cell data
 
 ![](plots/1.png)<!-- -->
 
-The simplification is performed at a specific **graining level** (*γ*),
-which we define as a ratio between the number of single cells in the
+Unlike clustering, the aim of metacells is not to identify large groups of cells that comprehensively capture biological concepts, like cell types, but to merge cells that share highly similar profiles, and may carry repetitive information. Therefore metacells represent a compromise structure that optimally remove redunant information in scRNA-Seq data while preserving the biologically relevant heterogeneity.
+
+An important concept when building metacells is the **graining level** (*γ*),
+which we define as the ratio between the number of single cells in the
 initial data and the number of metacells. Depending on the
 simplification method, the graining level is either specified by the
 user (in [bigSCale](https://github.com/iaconogi/bigSCale2),
 [SuperCell](https://github.com/GfellerLab/SuperCell) and
-[SEACells](https://github.com/dpeerlab/SEACells)) or determined by the
+[SEACells](https://github.com/dpeerlab/SEACells)) or imposed by the
 simplification algorithm (in
 [Metacell](https://github.com/tanaylab/metacell) and
 [Metacell-2](https://github.com/tanaylab/metacells)).
 
 ## Tutorial structure
 
-We will start with [a simple example of scRNA-seq data
-simplification](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Cell_lines.md),
-applying a simplification approach to the *cell lines* dataset. This
+We will start with [a first example of how to build and analyse metacells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Cell_lines.md),
+using a scRNA-Seq dataset of five *cell lines* [Tian et al](https://www.nature.com/articles/s41592-019-0425-8). This
 workbook includes a standard scRNA-seq data analysis pipeline with
 Seurat (i.e., visualization, clustering, differential expression
 analysis, gene-gene correlation) followed by data simplification (i.e.,
