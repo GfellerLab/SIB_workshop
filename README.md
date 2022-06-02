@@ -9,10 +9,10 @@ The exponential scaling of scRNA-seq data represents an important hurdle
 for downstream analyses. One of the solutions to facilitate the analysis of large-scale
 and noisy scRNA-seq data is to merge transcriptionally highly similar cells
 into *metacells*. This concept was first introduced by [*Baran et al.,
-2019*](https://doi.org/10.1186/s13059-019-1812-2) (MetaCell1.0) and by [*Iacono et
+2019*](https://doi.org/10.1186/s13059-019-1812-2) (MetaCell) and by [*Iacono et
 al., 2018*](https://doi:10.1101/gr.230771.117) (bigSCale). More recent methods to build
 *metacells* have been described in [*Ben-Kiki et
-al. 2022*](https://doi.org/10.1186/s13059-022-02667-1) (MetaCell2.0), [*Bilous et al.,
+al. 2022*](https://doi.org/10.1186/s13059-022-02667-1) (MetaCell-2), [*Bilous et al.,
 2022*](https://www.biorxiv.org/content/10.1101/2021.06.07.447430v2) (SuperCell) and
 [*Persad et al.,
 2022*](https://www.biorxiv.org/content/10.1101/2022.04.02.486748v1) (SEACells).
@@ -26,14 +26,13 @@ similarity (in transcriptomic space)
 regions in the single-cell network
 
 **3.** Transcriptomic information within identified metacells is merged
-(i.e., coarse-graining)
+(so-called coarse-graining)
 
-**4.** Metacell data are used for the downstream analyses instead of
-large-scale single-cell data
+**4.** Metacells are used for the downstream analyses instead of single cells
 
 ![](plots/1.png)<!-- -->
 
-Unlike clustering, the aim of metacells is not to identify large groups of cells that comprehensively capture biological concepts, like cell types, but to merge cells that share highly similar profiles, and may carry repetitive information. Therefore metacells represent a coarse-grained structure that optimally remove redunant information in scRNA-Seq data while preserving the biologically relevant heterogeneity.
+Unlike clustering, the aim of metacells is not to identify large groups of cells that comprehensively capture biological concepts, like cell types, but to merge cells that share highly similar profiles, and may carry repetitive information. **Therefore metacells represent a compromise structure that optimally remove redunant information in scRNA-Seq data while preserving the biologically relevant heterogeneity.**
 
 An important concept when building metacells is the **graining level** (*γ*),
 which we define as the ratio between the number of single cells in the
@@ -48,11 +47,11 @@ user (in [bigSCale](https://github.com/iaconogi/bigSCale2),
 ## Tutorial structure
 
 We will start with [a first example of how to build and analyse metacells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Cell_lines.md),
-using a scRNA-Seq dataset of five *cell lines* [Tian et al](https://www.nature.com/articles/s41592-019-0425-8). This
+using a scRNA-Seq dataset of five *cell lines* ([Tian et al](https://www.nature.com/articles/s41592-019-0425-8)). This
 workbook includes a standard scRNA-seq data analysis pipeline with
 Seurat (i.e., visualization, clustering, differential expression
-analysis, gene-gene correlation) followed by building metacells and performing the same standard downstream
-analysis to compare the results obtained at the
+analysis, gene-gene correlation) followed by building metacells and performing the same  downstream
+analyses to compare the results obtained at the
 single-cell and the metacells levels.
 
 The construction of metacells will be done with the algorithm developed in our
@@ -70,9 +69,8 @@ Next, we demonstrate the use of metacells for the analysis of a more
 realistic dataset of *COVID-19* patient blood samples followed by the
 demonstration of how [metacells can be used for data integration](). For
 this, we apply metacell to N COVID-19 samples and perform
-data integration of a total of NN cells at the metacell level. We hope
-you appreciate that the integration of such a large dataset is possible
-only at the metacell, but not at the single-cell level.
+data integration of a total of NN cells at the metacell level. This part of the tutorial will illustrate
+the power of metacells on a dataset that is more challenging to analyse at the single-cell level due to its large size.
 
 Finally, we provide a workbook of [metacell usage for the RNA
 velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelocity_for_metacells.md)
