@@ -15,8 +15,8 @@ al., 2018*](https://doi:10.1101/gr.230771.117) (bigSCale). More recent methods t
 al. 2022*](https://doi.org/10.1186/s13059-022-02667-1) (MetaCell2.0), [*Bilous et al.,
 2022*](https://www.biorxiv.org/content/10.1101/2021.06.07.447430v2) (SuperCell) and
 [*Persad et al.,
-2022*](https://www.biorxiv.org/content/10.1101/2022.04.02.486748v1) (SeaCell).
-Despite some differences in the implementation, all the methods are
+2022*](https://www.biorxiv.org/content/10.1101/2022.04.02.486748v1) (SEACells).
+Despite some differences in the implementation, all methods are
 network-based and can be summarized as follows:
 
 **1.** A single-cell network is computed based on cell-to-cell
@@ -36,10 +36,10 @@ large-scale single-cell data
 The simplification is performed at a specific **graining level** (*γ*),
 which we define as a ratio between the number of single cells in the
 initial data and the number of metacells. Depending on the
-simplification method, the graining level can be either specified by a
+simplification method, the graining level is either specified by the
 user (in [bigSCale](https://github.com/iaconogi/bigSCale2),
 [SuperCell](https://github.com/GfellerLab/SuperCell) and
-[SEACells](https://github.com/dpeerlab/SEACells)) or provided by the
+[SEACells](https://github.com/dpeerlab/SEACells)) or determined by the
 simplification algorithm (in
 [Metacell](https://github.com/tanaylab/metacell) and
 [Metacell-2](https://github.com/tanaylab/metacells)).
