@@ -24,7 +24,10 @@ dependencies:
   - r-seurat
   - r-sessioninfo
   - r-details
-
+  - r-harmony
+  - bioconductor-summarizedexperiment
+  - r-velocyto.r
+  
   - numpy
   - scipy
   - cython
