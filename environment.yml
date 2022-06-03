@@ -1,0 +1,29 @@
+name: metacell_tutorial
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - r-base
+  - pip
+  - git
+
+  - cmake
+  - r-igraph
+  - r-irlba
+  - r-remotes
+  - r-plyr
+  - r-patchwork
+  - r-matrix
+  - r-hmisc
+  - r-weights
+  - r-corpcor
+  - r-weightedcluster
+  - r-rann
+  - r-anndata
+  - r-umap
+  - r-seurat
+  - r-sessioninfo
+  - r-details
+  - r-harmony
+  - bioconductor-singlecellexperiment
+  - r-velocyto.r
