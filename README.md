@@ -114,7 +114,26 @@ curl -o data.zip https://drive.switch.ch/index.php/s/rOofK4o9QqFm8Gb/download
 unzip data.zip
 ```
 
-3.  to install and activate the following conda environment by running:
+3.  to run RStudio
+
+``` bach
+open -na Rstudio
+```
+
+4.  to install some R packages by running the following R commands:
+```
+install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2'))
+if (!require("BiocManager", quietly = TRUE))
+  install.packages("BiocManager")
+BiocManager::install("SingleCellExperiment")
+remotes::install_github("GfellerLab/SuperCell@dev")
+```
+
+5.  and to open file `/workbooks/Cell_lines.Rmd`.
+
+If you encounter issues with the previous installations, you can also install [conda]([https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation) and follow the next steps:
+
+3.  build and activate the following conda environment by running:
 
 ``` bash
 conda env create -n metacell_tutorial --file environment.yml
@@ -122,10 +141,13 @@ conda env create -n metacell_tutorial --file environment.yml
 conda activate metacell_tutorial 
 ```
 
-4.  to run RStudio
+4.  run RStudio
 
 ``` bach
 open -na Rstudio
 ```
 
-5.  and to open file `/workbooks/Cell_lines.Rmd`.
+5.  and open file `/workbooks/Cell_lines.Rmd`.
+
+
+
