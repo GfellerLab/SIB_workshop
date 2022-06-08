@@ -380,7 +380,7 @@ saveRDS(MC.all.markers, file = file.path(data.folder, "output",  paste0("MC_gamm
 # Load markers (backup)
 #MC.all.markers <- readRDS(file = file.path(data.folder, "output", "paste0("MC_gamma_", gamma, "_all_markers.Rds")))
 
-# Transform the ourput of `supercell_FindAllMarkers()` to be in the format of the `Seurat::FindAllMarkers()`
+# Transform the output of `supercell_FindAllMarkers()` to be in the format of the `Seurat::FindAllMarkers()`
 MC.all.markers.df <- data.frame()
 for(cl in names(MC.all.markers)){
   cur <- MC.all.markers[[cl]]
@@ -415,7 +415,7 @@ supercell_VlnPlot(
 
 ## Metacell construction with [Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html)
 
-Metacell concept is not limited to the SuperCell algorithm and metacells can be computed using the [Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html) and [SEACells](https://github.com/dpeerlab/SEACells) algorithms. Since both of the methods are implemented in Python, we provide scripts to buil metacells of the same cell line dataset either with [Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb) or with [SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb). In the following sections you can find 2 examples how to use the output of those algorithms to obtain SuperCell-like output, which you can use for the downstream analysis as was demonstrated above.
+Metacell concept is not limited to the SuperCell algorithm and metacells can be computed using the [Metacell-2](https://metacells.readthedocs.io/en/latest/Metacells_Vignette.html) and [SEACells](https://github.com/dpeerlab/SEACells) algorithms. Since both of the methods are implemented in Python, we provide scripts to build metacells of the same cell line dataset either with [Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb) or with [SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb). In the following sections you can find 2 examples of how to use the output of those algorithms to obtain SuperCell-like output, which you can use for the downstream analysis as was demonstrated above.
 
 Load pre-computed metacells with the Metacell-2 approach. See this [workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb) to reproduce the results or to run your own Metacell-2 construction.
 

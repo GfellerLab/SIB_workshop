@@ -32,7 +32,7 @@ We will mainly consider  the fist cell annotation to major PBMC cell types comin
 
 As in the original study we will discard immunoglobuline, ribosomal protein and mitochondrial genes for the dimension reduction analysis and the metacell construction.
 
-These gene lists of genes were retrieved from the [genenames website](www.genenames.org). In this tutorial we provide you the whole gene blacklist as an R object.
+These lists of genes were retrieved from the [genenames website](www.genenames.org). In this tutorial we provide you the whole gene blacklist as an R object.
 
 ```{r}
 gene_blacklist <- readRDS("../data/gene_blacklist.rds")
@@ -220,7 +220,7 @@ supercell_GeneGenePlot(GetAssayData(seuratMC),
 
 # Data integration
 
-We provide you a tutorial for integration at the single cell level [here](tutorial_integration_single_cells.Rmd) if you want to evaluate the time and the memory needed to for this analysis at this scale. Note that even with 32GB of memory the integration of all 26 samples is impossible at the single cell level.
+We provide you a tutorial for integration at the single cell level [here](tutorial_integration_single_cells.Rmd) if you want to evaluate the time and the memory needed for this analysis at this scale. Note that even with 32GB of memory the integration of all 26 samples is impossible at the single cell level.
 
 
 # Data integration at the metacell level
@@ -249,7 +249,7 @@ files <- list.files("../data/pbmc_COVID19_sce",full.names = T)
 
 MC.list <- list()
 MC.list[["S-S086-2"]] <- seuratMC
-for (f in files[-which(files == "../data/pbmc_COVID19_sce/S-S086-2_sce.rds")]) {
+for (f in files[which(files != "../data/pbmc_COVID19_sce/S-S086-2_sce.rds")]) {
   smp <- readRDS(f)
   smp <- sceRawToSeurat(smp)
   seuratMC <- makeSeuratMC(smp)
@@ -258,7 +258,7 @@ for (f in files[-which(files == "../data/pbmc_COVID19_sce/S-S086-2_sce.rds")]) {
 
 ```
 
-We select the highly variable genes accross samples for integration using the Seurat procedure.
+We select the highly variable genes across samples for integration using the Seurat procedure.
 
 ```{r}
 features <- SelectIntegrationFeatures(MC.list,nfeatures = 1500)
@@ -397,7 +397,7 @@ ggplot(data = melted_Roe[melted_Roe$majorType != "Macro",], aes(majorType,group,
  coord_fixed()
 ```
 
-We can do a differentially expressed gene analysis to characterized the gene markers of this population that seem to support progression of severe/critical COVID. We perform this analysis at the metacell level (on averaged normalized counts per metacell).
+We can do a differentially expressed gene analysis to characterize the gene markers of this population that seem to support progression of severe/critical COVID. We perform this analysis at the metacell level (on averaged normalized counts per metacell).
 
 ```{r}
 Idents(integrated) <- "majorType"
@@ -441,7 +441,7 @@ Neu
 supercells$seuratMC$majorType[supercells$SC$membership[Neu]]
 ```
 
-To completely match the original study results one possible strategy would be to make metacells per PBMC types 
+To completely match the original study results one possible strategy would be to make metacells per PBMC type 
 This will result in completely pure metacells according to the original annotation. 
 
 
@@ -608,7 +608,7 @@ pureMC <- SCimplify(GetAssayData(pbmc,slot = "data"),  # normalized gene express
 
 
 
-pureMC[["majorType"]]<- supercell_assign(clusters = pbmc@meta.data[,"majorType"], # single-cell assigment to cell lines (clusters)
+pureMC[["majorType"]]<- supercell_assign(clusters = pbmc@meta.data[,"majorType"], # single-cell assignment to cell lines (clusters)
                                     supercell_membership = pureMC$membership, # single-cell assignment to super-cells
                                     method = "absolute")
 
