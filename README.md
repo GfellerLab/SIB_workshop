@@ -57,7 +57,7 @@ algorithm (in [Metacell](https://github.com/tanaylab/metacell) and
 ## Tutorial structure
 
 We will start with [a first example of how to build and analyse
-metacells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Cell_lines.md),
+metacells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_1__cancer_cell_lines.md),
 applying a simplification approach to the *cell lines* dataset ([Tian et
 al](https://www.nature.com/articles/s41592-019-0425-8)). This workbook
 includes a standard scRNA-seq data analysis pipeline with Seurat (i.e.,
@@ -70,24 +70,28 @@ The construction of metacells will be done with the algorithm developed
 in our group, called
 [SuperCell](https://github.com/GfellerLab/SuperCell), but we also
 provide scripts to simplify the same dataset with other methods, such as
-[Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
+[Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_1__MetaCell2.ipynb)
 and
-[SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb).
+[SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb).
 Since those methods are Python-based, to avoid any issues with data
 transferring and software installation, we provide pre-computed results
 of those two methods that you can use for the downstream analysis.
 
 Next, we demonstrate the use of metacells for the analysis of a more
 realistic dataset of *COVID-19* patient blood samples followed by the
-demonstration of how [metacells can be used for data integration](). For
-this, we apply metacell to N COVID-19 samples and perform data
-integration of a total of NN cells at the metacell level. This part of
-the tutorial will illustrate the power of metacells on a dataset that is
-more challenging to analyse at the single-cell level due to its large
-size.
+demonstration of how [metacells can be used for data
+integration](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration.md).
+For this, we apply metacell to 26 COVID-19 samples and perform data
+integration of a total of
+![\\sim 200'000](https://latex.codecogs.com/png.image?%5Cdpi%7B110%7D&space;%5Cbg_white&space;%5Csim%20200%27000 "\sim 200'000")
+cells at the metacell level. This part of the tutorial will illustrate
+the power of metacells on a dataset that is more challenging to analyse
+at the single-cell level due to its large size. You can try to integrate
+this dataset at the single-cell level using [this
+workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration_single_cell.Rmd).
 
 Finally, we provide a workbook of [metacell usage for the RNA
-velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelocity_for_metacells.md)
+velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_3__RNA_velocity.md)
 that you may investigate yourself. Please, keep in mind that it requires
 the installation of [velocyto.R](http://velocyto.org).
 
@@ -95,18 +99,24 @@ the installation of [velocyto.R](http://velocyto.org).
 
 There are 2 main and 1 supplementary workbooks:
 
--   [workbook
-    1](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Cell_lines.md)
--   [workbook 2]()
--   [workbook
-    3](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/RNAvelocity_for_metacells.md)
+-   [Workbook
+    1](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_1__cancer_cell_lines.md)
+-   [Workbook
+    2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration.md)
+-   [Workbook
+    3](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_3__RNA_velocity.md)
 
 And 2 notebooks to build metacells using alternative methods:
 
--   [building metacells with
-    Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
--   [building metacells with
-    SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)
+-   [Notebook 1.1: building metacells with
+    Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_1__MetaCell2.ipynb)
+-   [Notebook 1.2: building metacells with
+    SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb)
+
+Or performing data integration at the single-cell level:
+
+-   [workbook
+    2.1](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration_single_cell.Rmd)
 
 ## Installation (Prerequisites)
 
@@ -129,7 +139,32 @@ curl -o data.zip https://drive.switch.ch/index.php/s/rOofK4o9QqFm8Gb/download
 unzip data.zip
 ```
 
-3.  to install and activate the following conda environment by running:
+3.  run RStudio
+
+``` bash
+open SIB_workshop.Rproj
+```
+
+4.  install some R packages by running the following R commands:
+
+``` r
+install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2'))
+if (!require("BiocManager", quietly = TRUE))
+   install.packages("BiocManager")
+BiocManager::install("SingleCellExperiment")
+remotes::install_github("GfellerLab/SuperCell")
+```
+
+5.  and open file `/workbooks/Workbook_1__cancer_cell_lines.Rmd`.
+
+#### If you have any issues with installation step **4**
+
+If you encounter issues with the previous installations, you can also
+install
+[conda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-installation)
+and follow the next steps:
+
+3.  build and activate the following conda environment by running:
 
 ``` bash
 conda env create -n metacell_tutorial --file environment.yml
@@ -137,10 +172,10 @@ conda env create -n metacell_tutorial --file environment.yml
 conda activate metacell_tutorial 
 ```
 
-4.  to run RStudio
+4.  run RStudio
 
 ``` bach
-open -na Rstudio
+open open SIB_workshop.Rproj
 ```
 
-5.  and to open file `/workbooks/Cell_lines.Rmd`.
+5.  and open file `/workbooks/Workbook_1__cancer_cell_lines.Rmd`.
