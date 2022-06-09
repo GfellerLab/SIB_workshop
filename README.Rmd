@@ -40,7 +40,7 @@ We will start with [a first example of how to build and analyse metacells](https
 
 The construction of metacells will be done with the algorithm developed in our group, called [SuperCell](https://github.com/GfellerLab/SuperCell), but we also provide scripts to simplify the same dataset with other methods, such as [Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_1__MetaCell2.ipynb) and [SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb). Since those methods are Python-based, to avoid any issues with data transferring and software installation, we provide pre-computed results of those two methods that you can use for the downstream analysis. 
 
-Next, we demonstrate the use of metacells for the analysis of a more realistic dataset of *COVID-19* patient blood samples followed by the demonstration of how [metacells can be used for data integration](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration.md). For this, we apply metacell to 26 COVID-19 samples and perform data integration of a total of $\sim 200'000$ cells at the metacell level. This part of the tutorial will illustrate the power of metacells on a dataset that is more challenging to analyse at the single-cell level due to its large size. You can try to integrate this dataset at the single-cell level using [this workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration_single_cell.Rmd).
+Next, we demonstrate the use of metacells for the analysis of a more realistic dataset of *COVID-19* patient blood samples followed by the demonstration of how [metacells can be used for data integration](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration.md). For this, we apply metacell to 26 COVID-19 samples and perform data integration of a total of $\sim 200'000$ cells at the metacell level. This part of the tutorial will illustrate the power of metacells on a dataset that is more challenging to analyse at the single-cell level due to its large size. You can try to integrate this dataset at the single-cell level using [this workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2_1__COVID19_integration_single_cells.Rmd).
 
 Finally, we provide a workbook of [metacell usage for the RNA velocity](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_3__RNA_velocity.md) that you may investigate yourself. Please, keep in mind that it requires the installation of [velocyto.R](http://velocyto.org).
 
@@ -58,7 +58,7 @@ And 2 notebooks to build metacells using alternative methods:
 
 Or performing data integration at the single-cell level:
 
-* [workbook 2.1](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2__COVID19_integration_single_cell.Rmd)
+* [Workbook 2.1](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Workbook_2_1__COVID19_integration_single_cells.Rmd)
 
 ## Installation (Prerequisites)
 

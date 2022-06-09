@@ -60,10 +60,10 @@ We also provide some scripts to build *metacells* using alternative
 approaches including
 [Metacell-2](https://metacells.readthedocs.io/en/latest/readme.html)
 ([script to build metacells with
-Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb))
+Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_1__MetaCell2.ipynb))
 and [SEACell](https://github.com/dpeerlab/SEACells) ([script to build
 metacells with
-SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)).
+SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb)).
 To avoid any issues related to the installation of those packages or
 data transferring from Python to R, we also provide precomputed results
 of metacell partition using those two methods (see and )
@@ -610,15 +610,15 @@ can be computed using the
 and [SEACells](https://github.com/dpeerlab/SEACells) algorithms. Since
 both of the methods are implemented in Python, we provide scripts to
 build metacells of the same cell line dataset either with
-[Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
+[Metacell-2](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_1__MetaCell2.ipynb)
 or with
-[SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb).
+[SEACells](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb).
 In the following sections you can find 2 examples of how to use the
 output of those algorithms to obtain SuperCell-like output, which you
 can use for the downstream analysis as was demonstrated above.
 
 Load pre-computed metacells with the Metacell-2 approach. See this
-[workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Metacell2.ipynb)
+[workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_1__MetaCell2.ipynb)
 to reproduce the results or to run your own Metacell-2 construction.
 
 **Note**, that to read python output, you will need the
@@ -680,7 +680,7 @@ object (file `"seacells_gamma_20_seurat.Rds"`)
 ## Metacell construction with [SEACells](https://github.com/dpeerlab/SEACells)
 
 Load pre-computed metacells with the SEACells approach. See this
-[workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/SEACells.ipynb)
+[workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb)
 to reproduce the results or to run your own SEACells construction.
 
     I_HAVE_ANNDATA_PACKAGE <- TRUE
