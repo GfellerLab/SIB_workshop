@@ -1,0 +1,133 @@
+---
+title: "tutorial_single_cell_integration"
+author: "Leonard Herault"
+date: '2022-06-07'
+output: html_document
+---
+---
+title: "Metacell integration"
+author: "Leonard Herault"
+date: '2022-05-12'
+output:
+  html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,warning = FALSE, message = FALSE)
+```
+
+## library loading
+
+```{r}
+library(SuperCell)
+library(Seurat)
+library(SingleCellExperiment)
+library(ggplot2)
+library(harmony)
+library(reshape2)
+
+
+
+```
+
+
+# Data integration at the single cell level
+
+If you have 30 GB of memory you can try to integrate `nSmp = 13` samples.
+If you have 15 GB of memory you can try to integrate `nSmp = 7` samples.
+
+```{r}
+
+nSmp = 13
+
+referenceFileIdx <- c(13,26)
+
+sampleFileIdx <- c(1:nSmp)[-c(13,25)]
+
+sampleFileIdx <- c(referenceFileIdx,sampleFileIdx[1:(nSmp-2)])
+
+start_time <- Sys.time()
+
+files <- list.files("../data/pbmc_COVID19_sce",full.names = T)[sampleFileIdx]
+
+gene_blacklist <- readRDS("../data/gene_blacklist.rds")
+
+
+
+
+sceRawToSeurat<- function(pbmc,nfeatures = 1500) {
+pbmc <- CreateSeuratObject(counts = assay(pbmc),meta.data = data.frame(colData(pbmc)))
+pbmc <- FindVariableFeatures(pbmc,nfeatures = nfeatures)
+VariableFeatures(pbmc) <- VariableFeatures(pbmc)[!VariableFeatures(pbmc) %in% gene_blacklist]
+pbmc <- NormalizeData(pbmc)
+return(pbmc)
+}
+
+sc.list <- list()
+
+
+for (f in files) {
+  print(f)
+  smp <- readRDS(f)
+  smp <- sceRawToSeurat(smp)
+  sc.list[[as.character(unique(smp$sampleID))]] <- smp
+}
+
+reference <- which(c("S-S086-2","S-M064") %in% names(sc.list)) 
+
+
+features <- SelectIntegrationFeatures(sc.list,nfeatures = 1500)
+
+features <- features[!features %in% gene_blacklist]
+
+for (i in 1:length(sc.list)) {
+  sc.list[[i]] <- RenameCells(sc.list[[i]],add.cell.id = unique(sc.list[[i]]$sampleID))
+  sc.list[[i]] <- ScaleData(sc.list[[i]],features = features)
+  sc.list[[i]] <- RunPCA(sc.list[[i]] ,features = features,npcs = 20)
+}
+
+
+
+anchors <- FindIntegrationAnchors(object.list = sc.list,
+                                  reference = reference, 
+                                  reduction = "rpca",
+                                  anchor.features = features,
+                                  dims = 1:20)
+
+integrated <- IntegrateData(anchorset = anchors, dims = 1:20)
+
+end_time <- Sys.time()
+
+end_time - start_time 
+
+gc()
+
+```
+
+# Classical single cell analysis
+
+We can now use the Seurat workflow on the integrated object
+
+```{r}
+DefaultAssay(integrated) = "integrated"
+integrated <- ScaleData(integrated, verbose = T)
+integrated <- RunPCA(integrated, verbose = FALSE)
+integrated <- RunUMAP(integrated, dims = 1:20)
+```
+
+
+We check that our integration correctly mixed the different samples in the reduced space by preserving differences between the different PBMC types.
+We can also check that we don't have a gender effect in the integrated data.
+
+```{r}
+UMAPPlot(integrated,group.by = "sampleID")
+
+UMAPPlot(integrated,group.by = "majorType")
+
+UMAPPlot(integrated,group.by = "Sex")
+
+```
+```{r}
+ncol(integrated)
+```
+
