@@ -478,7 +478,7 @@ if(I_HAVE_ANNDATA_PACKAGE){
 Load pre-computed metacells with the SEACells approach. See this [workbook](https://github.com/GfellerLab/SIB_workshop/blob/main/workbooks/Notebook_1_2__SEACells.ipynb) to reproduce the results or to run your own SEACells construction.
 
 ```{r SEACells}
-I_HAVE_ANNDATA_PACKAGE <- TRUE
+I_HAVE_ANNDATA_PACKAGE <- TRUE # Replace with FALSE if you have any issues reading .h5ad files
 fname <- "seacells_gamma_20"
 
 if(I_HAVE_ANNDATA_PACKAGE){
@@ -518,9 +518,11 @@ if(I_HAVE_ANNDATA_PACKAGE){
 ```
 
 ```{r Sessioninfo, echo=FALSE}
+if(FALSE){
 sessioninfo::session_info()%>%
   details::details(
     summary = 'Current session info',
     open    = TRUE
   )
+}
 ```
