@@ -22,8 +22,7 @@
         -   [DEA of cell lines in
             *metacells*](#dea-of-cell-lines-in-metacells)
         -   [Plot gene-gene correlation at single-cell and metacell
-            levels (! TO find better
-            examples)](#plot-gene-gene-correlation-at-single-cell-and-metacell-levels-to-find-better-examples)
+            levels](#plot-gene-gene-correlation-at-single-cell-and-metacell-levels-to-find-better-examples)
     -   [Alternative or Sample-weighted downstream analysis of
         *metacells*](#alternative-or-sample-weighted-downstream-analysis-of-metacells)
         -   [Dimensionality reduction](#dimensionality-reduction)
