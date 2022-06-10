@@ -148,9 +148,9 @@ open SIB_workshop.Rproj
 4.  install some R packages by running the following R commands:
 
 ``` r
-install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2', 'remotes'))
+install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2', 'remotes','umap','anndata'))
 if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
-BiocManager::install("SingleCellExperiment")
+BiocManager::install("SingleCellExperiment",'scater')
 remotes::install_github("GfellerLab/SuperCell")
 ```
 
@@ -167,8 +167,10 @@ and follow the next steps:
 
 ``` bash
 conda env create -n metacell_tutorial --file environment.yml
-
-conda activate metacell_tutorial 
+conda activate metacell_tutorial
+export RSTUDIO_WHICH_R=$HOME/miniconda3/envs/metacell_tutorial/bin/R
+open -na Rstudio SIB_workshop.Rproj # for Mac users
+rstudio open SIB_workshop.Rproj # for linux 
 ```
 
 4.  run RStudio
