@@ -22,7 +22,7 @@
         -   [DEA of cell lines in
             *metacells*](#dea-of-cell-lines-in-metacells)
         -   [Plot gene-gene correlation at single-cell and metacell
-            levels](#plot-gene-gene-correlation-at-single-cell-and-metacell-levels-to-find-better-examples)
+            levels](#plot-gene-gene-correlation-at-single-cell-and-metacell-levels)
     -   [Alternative or Sample-weighted downstream analysis of
         *metacells*](#alternative-or-sample-weighted-downstream-analysis-of-metacells)
         -   [Dimensionality reduction](#dimensionality-reduction)
@@ -477,7 +477,7 @@ Seurat clustering
 
 ![](Workbook_1__cancer_cell_lines_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
-### Plot gene-gene correlation at single-cell and metacell levels (! TO find better examples)
+### Plot gene-gene correlation at single-cell and metacell levels
 
     gene_x <- MC$genes.use[500:505] #500
     gene_y <- MC$genes.use[550:555] #600
