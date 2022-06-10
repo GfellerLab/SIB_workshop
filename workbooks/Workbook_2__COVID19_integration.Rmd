@@ -1,6 +1,6 @@
 ---
 title: "Metacell integration"
-author: "Leonard Herault"
+author: "Leonard Herault, Mariia Bilous, Aurelie Gabriel, and David Gfeller"
 date: '2022-05-12'
 output:
   github_document
