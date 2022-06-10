@@ -464,7 +464,7 @@ MC_majorTypes <- c(MC_majorTypes,list(Neu_MC))
 
 MC_majorTypes2 <- supercell_merge(MC_majorTypes, fields = "majorType")
 
-remove(MC_majorTypes2)
+remove(MC_majorTypes)
 gc()
 
 MC_majorTypes_GE <- supercell_GE(as.matrix(GetAssayData(pbmc)[,names(MC_majorTypes2$membership)]),groups = MC_majorTypes2$membership)
