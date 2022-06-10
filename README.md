@@ -127,7 +127,7 @@ For the smooth run of the tutorial, we ask you:
 1.  to clone this repository:
 
 ``` bash
-git clone https://github.com/GfellerLab/SIB_workshop.git
+gh repo clone GfellerLab/SIB_workshop
 ```
 
 2.  to download data and pre-processed objects of Metacell-2 and SEACell
@@ -149,8 +149,7 @@ open SIB_workshop.Rproj
 
 ``` r
 install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2', 'remotes'))
-if (!require("BiocManager", quietly = TRUE))
-   install.packages("BiocManager")
+if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 BiocManager::install("SingleCellExperiment")
 remotes::install_github("GfellerLab/SuperCell")
 ```
