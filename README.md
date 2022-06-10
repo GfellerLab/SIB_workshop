@@ -148,7 +148,7 @@ open SIB_workshop.Rproj
 4.  install some R packages by running the following R commands:
 
 ``` r
-install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2'))
+install.packages(c('Seurat','dplyr','ggplot2','harmony','reshape2', 'remotes'))
 if (!require("BiocManager", quietly = TRUE))
    install.packages("BiocManager")
 BiocManager::install("SingleCellExperiment")
