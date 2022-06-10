@@ -127,7 +127,7 @@ For the smooth run of the tutorial, we ask you:
 1.  to clone this repository:
 
 ``` bash
-gh repo clone GfellerLab/SIB_workshop
+git clone https://github.com/GfellerLab/SIB_workshop.git
 ```
 
 2.  to download data and pre-processed objects of Metacell-2 and SEACell
