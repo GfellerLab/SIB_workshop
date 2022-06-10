@@ -464,6 +464,9 @@ MC_majorTypes <- c(MC_majorTypes,list(Neu_MC))
 
 MC_majorTypes2 <- supercell_merge(MC_majorTypes, fields = "majorType")
 
+remove(MC_majorTypes2)
+gc()
+
 MC_majorTypes_GE <- supercell_GE(as.matrix(GetAssayData(pbmc)[,names(MC_majorTypes2$membership)]),groups = MC_majorTypes2$membership)
 
 MC_majorTypes2$genes.use <- VariableFeatures(pbmc)
@@ -500,44 +503,7 @@ UMAPPlot(seuratPureMC,group.by = "majorType")
 FeaturePlot(seuratPureMC,features = "nFeature_RNA")
 
 ```
-Or we can use the `cell.split.condition` option of the `SCimplify` function that is faster but lead to a less good separation of T, B and NK cells at the metacell level...
 
-```{r}
-pureMC <- SCimplify(GetAssayData(pbmc,slot = "data"),  # normalized gene expression matrix
-                 n.pc = 20,
-                 k.knn = 5, # number of nearest neighbors to build kNN network
-                 gamma = 20, # graining level
-                 genes.use = VariableFeatures(pbmc),
-                 cell.split.condition = pbmc$majorType)
-
-
-
-
-pureMC[["majorType"]]<- supercell_assign(clusters = pbmc@meta.data[,"majorType"], # single-cell assignment to cell lines (clusters)
-                                    supercell_membership = pureMC$membership, # single-cell assignment to super-cells
-                                    method = "absolute")
-
-
-GE <- supercell_GE(as.matrix(GetAssayData(pbmc,slot = "data")),groups = pureMC$membership)
-
-
-seuratPureMC <- supercell_2_Seurat(SC.GE = GE,
-                                   SC = pureMC,
-                                   fields = c("majorType"))
-
-seuratPureMC <- RunUMAP(seuratPureMC,dims = c(1:20))
-
-UMAPPlot(seuratPureMC,group.by = "majorType")
-ncol(seuratPureMC)
-```
-Without taking into account the metacell size: 
-
-```{r}
-seuratPureMC <- ScaleData(seuratPureMC)
-seuratPureMC <- RunPCA(seuratPureMC, npcs = 20)
-seuratPureMC <- RunUMAP(seuratPureMC,dims = c(1:20))
-UMAPPlot(seuratPureMC,group.by = "majorType")
-```
 
 
 
