@@ -27,5 +27,3 @@ dependencies:
   - r-harmony
   - bioconductor-singlecellexperiment
   - r-velocyto.r
-  - bioconductor-scater
-  - r-biocmanager
