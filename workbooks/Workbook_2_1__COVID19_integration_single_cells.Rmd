@@ -1,6 +1,6 @@
 ---
 title: "tutorial_single_cell_integration"
-author: "Leonard Herault"
+author: "Leonard Herault, Mariia Bilous, Aurelie Gabriel, and David Gfeller"
 date: '2022-06-07'
 output: html_document
 ---
